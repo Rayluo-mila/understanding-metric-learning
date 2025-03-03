@@ -1,0 +1,130 @@
+# @package _global_
+
+# Environment-specific settings
+env_name: dmc_state
+domain_name: cartpole
+task_name: swingup
+total_frames: 1000
+eval_total_frames: 1000
+MUJOCO_GL: egl  # Choices: ['egl', 'glfw', 'osmesa']
+
+# Noise setting
+resource_files: environments/dmc2gym/res/train_video/*.mp4
+eval_resource_files: environments/dmc2gym/res/eval_video/*.mp4
+img_source: none  # Choices: ['noise', 'none']
+noise_std: 1.0
+noise_dim: 32
+eval_noise_mean: 1.0
+random_proj_std: 1.0
+random_proj_dim: 'identical'  # 'identical' | int
+
+# Environment Vectorization
+use_vectorized_training_env: true
+training_env_homogeneous_level: 1
+# 0: Heterogeneous noise sources for each environment
+# 1: Uniform noise sources across all parallel environments
+# 2: Synchronized noise backgrounds for all parallel environments
+num_parallel_envs: 10  # use 5, 10, ... that are divisible into episode_step to prevent errors
+enforce_same_states: false
+# Same physics, and same action (the first env's action) for each env, only different in bg noise
+save_bg_debug: false
+save_bg_dir: experiments/obs
+
+# Training
+replay_ratio: 0.2  # Gradient updates per environment transition
+replay_buffer_capacity: 1000000
+
+# Eval
+eval_freq: 50
+eval_bism_states: true
+anchor_batch_size: 125
+pos_neg_batch_size: 16
+num_eval_episodes: 10
+
+# Agent-specific overrides
+agent:
+  name: bisim  # Choices: see ./cfgs/agent_configs.yaml
+  batch_size: 128
+  hidden_dim: 256
+  k: 3  # Number of steps for inverse model
+  transition_model_type: deterministic  # Choices: ['', 'deterministic', 'probabilistic(_v2)', 'ensemble(_v2)']
+
+  # Actor settings
+  actor_lr: 1e-3
+  actor_beta: 0.9
+  actor_log_std_min: -10
+  actor_log_std_max: 2
+  actor_update_freq: 2
+
+  # Critic settings
+  critic_lr: 1e-3
+  critic_beta: 0.9
+  critic_tau: 0.01
+  critic_target_update_freq: 2
+
+  # Encoder/Decoder specific overrides
+  encoder_feature_dim: 50
+  encoder_type: mlp
+  encoder_stride: 2
+  decoder_type: identity
+  encoder_lr: 1e-3
+  encoder_tau: 0.05
+  decoder_lr: 1e-3
+  decoder_weight_lambda: 1e-7
+
+  # SAC settings
+  discount: 0.99
+  init_temperature: 0.1
+  alpha_lr: 1e-4
+  alpha_beta: 0.5
+
+  # Metric
+  encoder_max_norm: false
+  encoder_max_norm_override: 0  # 0 for default max norm in RDBC
+  use_target_encoder: false
+  bisim_dist: L2
+  r_dist: L1
+  prob_dist: ''
+  metric_loss_type: L2  # Choices: ['L2', 'huber']
+  c_R: 1.0
+  c_T: 0.99
+  rp: true
+  zp: true
+  rp_zprime: true
+  rzp_coef: 1.0
+  rp_detach_encoder: false
+  zp_detach_encoder: false
+  no_phi_q_star: false
+  model_based_on_policy_metric_update: false
+  on_policy_metric_update: false
+  mico_beta: 0.1  # 1e-5 / 1e-6 (in RAP repo) or 0.1 (MICo default)
+  state_reward_decoder_loss_coef: 0.5  # For RAP state reward decoder
+  state_rp_detach_encoder: false  # For RAP state reward decoder
+  report_grad_norm: false
+
+  plot_r_dist_interval: 0  # 0: disable
+  plot_r_dist_save_dir: experiments/r_dist
+
+  # isolated metric agent settings
+  encoder_max_norm_metric: false
+  encoder_max_norm_override_metric: 0
+  encoder_type_metric: mlp  # a copy of encoder that only affected by metric loss
+  metric_encoder_lr: 1e-3
+  metric_encoder_with_phi_q: false
+  metric_encoder_feature_dim: 50
+  metric_zp_detach_encoder: true
+  metric_rp_detach_encoder: true
+
+  # step-related
+  bisim_start_step: 0
+
+# Miscellaneous overrides
+wandb_proj_name: DMCState-finger-spin
+wandb_update_freq: 1
+port: 2000
+save_train_video: false
+save_video: false
+
+# For reporting result in the performance table
+perf_report_start_step: [950000, 1950000]
+perf_report_end_step: [1050000, 2050000]

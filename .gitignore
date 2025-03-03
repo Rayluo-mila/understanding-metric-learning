@@ -1,0 +1,16 @@
+*.pyc
+*.log
+*.json
+*.out
+*.err
+*.tfevents.*
+*.pk
+*.png
+wandb
+*.mp4
+*.sh
+*.whl
+*.csv
+*.pdf
+*.tex
+*.npy

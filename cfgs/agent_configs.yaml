@@ -1,0 +1,212 @@
+agents:
+# Base settings
+  baseline:
+    class_path: agents.sac_aux_agent.SACAuxAgent
+
+  bisim:
+    class_path: agents.bisim_agent_sac.BisimAgent
+
+  deepmdp:
+    class_path: agents.deepmdp_agent.DeepMDPAgent
+
+# Default settings (same as the original settings in the github repos)
+  dbc:  # https://github.com/facebookresearch/deep_bisim4control/tree/main
+    class_path: agents.bisim_agent_sac.BisimAgent
+    transition_model_type: 'probabilistic'
+    bisim_dist: 'huber_mean'
+    r_dist: 'huber'
+    metric_loss_type: 'L2'
+    encoder_max_norm: false
+
+  rdbc:  # https://github.com/metekemertas/RobustBisimulation/tree/main
+  # huber_mean for z_dist and z'_dist may require max_norm to scale feature_dim times
+  # but here we stick to the original setting
+    class_path: agents.bisim_agent_sac.BisimAgent
+    transition_model_type: 'probabilistic'
+    bisim_dist: 'huber_mean'
+    r_dist: 'huber'
+    prob_dist: 'huber_mean'
+    metric_loss_type: 'L2'
+    encoder_max_norm: true
+  
+  rdbc-huber-target:
+    class_path: agents.bisim_agent_sac.BisimAgent
+    transition_model_type: 'probabilistic'
+    bisim_dist: 'huber_mean'
+    r_dist: 'huber'
+    prob_dist: 'huber_mean'
+    encoder_max_norm: true
+    use_target_encoder: true
+    metric_loss_type: 'huber'
+  
+  rdbc-huber:
+    class_path: agents.bisim_agent_sac.BisimAgent
+    transition_model_type: 'probabilistic'
+    bisim_dist: 'huber_mean'
+    r_dist: 'huber'
+    prob_dist: 'huber_mean'
+    encoder_max_norm: true
+    metric_loss_type: 'huber'
+  
+  rdbc-target:
+    class_path: agents.bisim_agent_sac.BisimAgent
+    transition_model_type: 'probabilistic'
+    bisim_dist: 'huber_mean'
+    r_dist: 'huber'
+    prob_dist: 'huber_mean'
+    encoder_max_norm: true
+    use_target_encoder: true
+
+  rdbc-sum:  # a fixed version of RDBC
+    class_path: agents.bisim_agent_sac.BisimAgent
+    transition_model_type: 'probabilistic'
+    bisim_dist: 'huber'
+    r_dist: 'huber'
+    prob_dist: 'huber'
+    metric_loss_type: 'L2'
+    encoder_max_norm: true
+  
+  rdbc-detachrz:  # https://github.com/metekemertas/RobustBisimulation/tree/main
+  # huber_mean for z_dist and z'_dist may require max_norm to scale feature_dim times
+  # but here we stick to the original setting
+    class_path: agents.bisim_agent_sac.BisimAgent
+    transition_model_type: 'probabilistic'
+    rp_detach_encoder: true
+    zp_detach_encoder: true
+    bisim_dist: 'huber_mean'
+    r_dist: 'huber'
+    prob_dist: 'huber_mean'
+    metric_loss_type: 'L2'
+    encoder_max_norm: true
+
+  self-pred:  # https://github.com/facebookresearch/deep_bisim4control/blob/main/agent/deepmdp_agent.py
+    class_path: agents.deepmdp_agent.DeepMDPAgent
+    transition_model_type: 'probabilistic'
+    decoder_type: 'identity'
+
+  self-pred-l2normed:
+    class_path: agents.deepmdp_agent.DeepMDPAgent
+    encoder_post_processing: 'l2_norm'
+    transition_model_type: 'probabilistic'
+    decoder_type: 'identity'
+
+  sac:  # https://github.com/facebookresearch/deep_bisim4control/blob/main/agent/baseline_agent.py
+    class_path: agents.base_agent.SACAgent
+    decoder_type: 'identity'
+
+  sac-op:  # https://github.com/facebookresearch/deep_bisim4control/blob/main/agent/baseline_agent.py
+    class_path: agents.sac_aux_agent.SACAuxAgent
+    decoder_type: 'pixel'
+
+  simsr-full:  # https://github.com/bit1029public/SimSR/blob/main/simsr_sac.py
+    class_path: agents.mico_agent_sac.MICoAgent
+    encoder_post_processing: 'l2_norm'
+    transition_model_type: 'probabilistic'
+    bisim_dist: 'simsr'
+    r_dist: 'L1'
+    metric_loss_type: 'huber'
+  
+  simsr:  # https://github.com/bit1029public/SimSR/blob/main/simsr_sac.py
+    class_path: agents.mico_agent_sac.MICoAgent
+    encoder_post_processing: 'l2_norm'
+    transition_model_type: 'probabilistic'
+    bisim_dist: 'simsr'
+    r_dist: 'L1'
+    rp: false
+    metric_loss_type: 'huber'
+  
+  simsr-basic-nozp:  # https://github.com/bit1029public/SimSR/blob/main/simsr_sac.py
+    class_path: agents.mico_agent_sac.MICoAgent
+    encoder_post_processing: 'l2_norm'
+    bisim_dist: 'simsr_basic'
+    r_dist: 'L1'
+    rp: false
+    zp: false
+    metric_loss_type: 'huber'
+
+  simsr-ens:  # https://github.com/bit1029public/SimSR/blob/main/simsr_sac.py
+    class_path: agents.mico_agent_sac.MICoAgent
+    encoder_post_processing: 'l2_norm'
+    transition_model_type: 'ensemble_v2'
+    bisim_dist: 'simsr'
+    r_dist: 'L1'
+    rp: false
+    metric_loss_type: 'huber'
+
+  simsr-basic:  # https://github.com/bit1029public/SimSR/blob/main/simsr_sac.py
+    class_path: agents.mico_agent_sac.MICoAgent
+    encoder_post_processing: 'l2_norm'
+    transition_model_type: 'probabilistic'
+    bisim_dist: 'simsr_basic'
+    r_dist: 'L1'
+    rp: false
+    metric_loss_type: 'huber'
+
+  mico:  # https://github.com/google-research/google-research/blob/bb19948d367f3337c16176232e86069bf36b0bf5/mico/atari/metric_dqn_agent.py
+    class_path: agents.mico_agent_sac.MICoAgent
+    bisim_dist: 'mico'
+    r_dist: 'L1'
+    rp: false
+    zp: false
+    use_target_encoder: true
+    metric_loss_type: 'huber'
+
+  rap:  # https://github.com/jianda-chen/RAP_distance
+    class_path: agents.rap_agent_sac.RAPAgent
+    transition_model_type: 'probabilistic'
+    bisim_dist: 'mico'
+    r_dist: 'rap'
+    prob_dist: 'L2_mean'
+    mico_beta: 1e-6
+    rzp_coef: 1e-4
+    state_reward_decoder_loss_coef: 0.5
+    actor_lr: 5e-4
+    critic_lr: 5e-4
+    encoder_lr: 5e-4
+    encoder_feature_dim: 100
+
+# Isolated Settings
+  sac-isolated-metric-dbc:
+    class_path: agents.isolated_metric_agent.IsolatedMetricSACAgent
+    encoder_max_norm: false
+    encoder_max_norm_metric: false
+    transition_model_type: 'probabilistic'
+    bisim_dist: 'huber_mean'
+    r_dist: 'huber'
+    metric_loss_type: 'L2'
+    # clamp_target_q: true
+    # on_policy_metric_update: true
+    # use_target_encoder: true
+    bisim_coef: 0.5
+
+  sac-isolated-metric-rdbc:
+    class_path: agents.isolated_metric_agent.IsolatedMetricSACAgent
+    encoder_max_norm: false
+    encoder_max_norm_metric: true
+    transition_model_type: 'probabilistic'
+    bisim_dist: 'huber_mean'
+    r_dist: 'huber'
+    prob_dist: 'huber_mean'
+    metric_loss_type: 'L2'
+    # clamp_target_q: true
+    # on_policy_metric_update: true
+    # use_target_encoder: true
+    bisim_coef: 0.5
+
+  sac-isolated-metric-mico:
+    class_path: agents.isolated_metric_agent.IsolatedMetricSACAgent
+    bisim_dist: 'mico'
+    r_dist: 'L1'
+    rp: false
+    zp: false
+    use_target_encoder: true
+    metric_loss_type: 'huber'
+    # clamp_target_q: true
+    # on_policy_metric_update: true
+  
+  sac-isolated-metric-simsr:
+    class_path: agents.isolated_metric_agent.IsolatedMetricSACAgent
+    encoder_post_processing_metric: 'l2_norm'
+    bisim_dist: 'simsr'
+    r_dist: 'L1'
+    metric_loss_type: 'huber'

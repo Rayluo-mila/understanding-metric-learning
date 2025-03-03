@@ -1,0 +1,118 @@
+defaults:
+  - _self_
+  - env: dmc_state  # Default environment (can be overridden by `python main.py env=dmc_pixel`)
+  - override hydra/job_logging: disabled
+  - override hydra/hydra_logging: disabled
+
+# Common Device settings
+device: cuda  # CUDA: cuda / cuda:{id}, CPU: cpu
+
+# Common Replay buffer settings
+replay_buffer_capacity: 100000
+replay_ratio: 1.0
+
+# Common Evaluation settings
+eval_freq: 1000
+num_eval_episodes: 5
+
+# Common WandB settings
+save_wandb: false
+wandb_proj_name: Metrics
+wandb_run_name: ""
+wandb_update_freq: 2  # Average the values collected and sync them to wandb
+
+# Common Misc settings
+seed: 1
+num_train_steps: 2500000
+init_steps: 1000
+work_dir: './experiments'
+save_snapshot: false
+render: false
+image_size: 84
+profiling: false
+profiling_steps: 1000
+eval_at_start: true
+
+# Common Env settings
+action_repeat: 1
+
+# Environment Vectorization
+use_vectorized_training_env: false
+training_env_homogeneous_level: 1
+num_parallel_envs: 10
+
+# Common Agent settings
+agent:
+  name: bisim
+  hidden_dim: 64
+  batch_size: 128
+  load_encoder: null
+  encoder_feature_dim: 50
+  encoder_post_processing: ''
+  encoder_post_processing_metric: ''
+  encoder_lr: 1e-3
+  encoder_tau: 0.005
+  decoder_lr: 1e-3
+  decoder_update_freq: 1
+  decoder_weight_lambda: 0.0
+  reward_decoder_hidden_size: 512
+  transition_model_hidden_size: 512
+  num_layers: 4
+  num_filters: 32
+  use_done_signal: false
+  clamp_target_q: false
+  clip_grad_norm_critic: 0
+  clip_grad_norm_actor: 0
+  single_repr_head: false
+
+  # Metric
+  metric_type: pbsm
+  bisim_coef: 0.5
+  bisim_dist: L1
+  r_dist: L1
+  prob_dist: ''
+  encoder_max_norm: false
+  use_target_encoder: false
+  repr_upd_phase_length: 1
+  q_upd_phase_length: 1
+  model_based_on_policy_metric_update: false
+  no_phi_q_star: false
+  rp: true
+  zp: true
+  rzp_coef: 1.0
+  rp_detach_encoder: false
+  zp_detach_encoder: false
+  fixed_policy_after_n_steps: 0
+  metric_loss_type: L2  # Choices: ['L2', 'huber']
+  use_uniformly_sampled_states: false  # Only works when using bsm metric type
+  encoder_norm_scale: 1.0
+  c_R: 0.5
+  c_T: 0.5
+  mico_beta: 0.1
+  state_reward_decoder_loss_coef: 0.5
+  state_rp_detach_encoder: false
+  report_grad_norm: false
+  encoder_type_metric: pixel  # a copy of encoder that only affected by metric loss
+
+  device: ${device}
+  action_repeat: ${action_repeat}
+  init_steps: ${init_steps}
+  num_parallel_envs: ${num_parallel_envs}
+  max_reward: ???
+  min_reward: ???
+
+
+# To be specified when running
+pid: ???
+jobid: ???
+SLURM_ARRAY_TASK_ID: ???
+GPU_type: ???
+note: no
+
+hydra:
+  output_subdir: null 
+  run:
+    dir: .
+  sweep:
+    dir: ./experiments/${now:%Y.%m.%d}/${now:%H%M}_${agent_cfg.experiment}
+    subdir: ${hydra.job.num}
