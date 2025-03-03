@@ -9,7 +9,7 @@ device: cuda  # CUDA: cuda / cuda:{id}, CPU: cpu
 
 # Common Replay buffer settings
 replay_buffer_capacity: 100000
-replay_ratio: 1.0
+replay_ratio: 0.2
 
 # Common Evaluation settings
 eval_freq: 1000
