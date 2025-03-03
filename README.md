@@ -14,6 +14,7 @@ Default hyperparameters are stored in `cfgs/` directory.
 
 To run a minimal experiment, you can use the following command:
 ### DMC (Pixel-based)
+```
 python main.py \
         env=dmc_state \
         domain_name=cheetah \
@@ -24,6 +25,7 @@ python main.py \
         noise_std=8.0 \
         img_source=noise \
         use_vectorized_training_env=true
+```
 
 ### DMC (State-based)Trainer
 ```
