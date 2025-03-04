@@ -31,39 +31,16 @@ class PixelDecoder(nn.Module):
             )
         )
 
-        # self.outputs = dict()
-
     def forward(self, h):
         h = torch.relu(self.fc(h))
-        # self.outputs['fc'] = h
-
         deconv = h.view(-1, self.num_filters, self.init_height, self.init_width)
-        # self.outputs['deconv1'] = deconv
-
         for i in range(0, self.num_layers - 1):
             deconv = torch.relu(self.deconvs[i](deconv))
-            # self.outputs['deconv%s' % (i + 1)] = deconv
-
         obs = self.deconvs[-1](deconv)
-        # self.outputs['obs'] = obs
-
         return obs
 
     def log(self, L, step, log_freq):
         pass
-        # if step % log_freq != 0:
-        #     return
-
-        # for k, v in self.outputs.items():
-        #     L.log_histogram('train_decoder/%s_hist' % k, v, step)
-        #     if len(v.shape) > 2:
-        #         L.log_image('train_decoder/%s_i' % k, v[0], step)
-
-        # for i in range(self.num_layers):
-        #     L.log_param(
-        #         'train_decoder/deconv%s' % (i + 1), self.deconvs[i], step
-        #     )
-        # L.log_param('train_decoder/fc', self.fc, step)
 
 
 _AVAILABLE_DECODERS = {'pixel': PixelDecoder}

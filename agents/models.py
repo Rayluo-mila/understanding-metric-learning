@@ -2,7 +2,6 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch.distributions.categorical import Categorical
 
 from agents.encoder import make_encoder
 
@@ -86,7 +85,6 @@ class Actor(nn.Module):
             nn.Linear(hidden_dim, 2 * action_shape[0])
         )
 
-        self.outputs = dict()
         self.apply(weight_init)
 
     def forward(
@@ -103,9 +101,6 @@ class Actor(nn.Module):
         log_std = self.log_std_min + 0.5 * (
             self.log_std_max - self.log_std_min
         ) * (log_std + 1)
-
-        # self.outputs['mu'] = mu
-        # self.outputs['std'] = log_std.exp()
 
         if compute_pi:
             std = log_std.exp()
@@ -125,15 +120,6 @@ class Actor(nn.Module):
 
     def log(self, L, step, log_freq=LOG_FREQ):
         pass
-        # if step % log_freq != 0:
-        #     return
-
-        # for k, v in self.outputs.items():
-        #     L.log_histogram('train_actor/%s_hist' % k, v, step)
-
-        # L.log_param('train_actor/fc1', self.trunk[0], step)
-        # L.log_param('train_actor/fc2', self.trunk[2], step)
-        # L.log_param('train_actor/fc3', self.trunk[4], step)
 
 
 class QFunction(nn.Module):
@@ -179,7 +165,6 @@ class Critic(nn.Module):
             self.encoder.feature_dim, action_shape[0], hidden_dim
         )
 
-        self.outputs = dict()
         self.apply(weight_init)
 
     def forward(self, obs, action, detach_encoder=False, require_hnorm=False, cnn_output=None):
@@ -195,176 +180,11 @@ class Critic(nn.Module):
         q1 = self.Q1(z, action)
         q2 = self.Q2(z, action)
 
-        # self.outputs['q1'] = q1
-        # self.outputs['q2'] = q2
-
         if require_hnorm: return q1, q2, z_norm
         return q1, q2
 
     def log(self, L, step, log_freq=LOG_FREQ):
         pass
-        # if step % log_freq != 0:
-        #     return
-
-        # self.encoder.log(L, step, log_freq)
-
-        # for k, v in self.outputs.items():
-        #     L.log_histogram('train_critic/%s_hist' % k, v, step)
-
-        # for i in range(3):
-        #     L.log_param('train_critic/q1_fc%d' % i, self.Q1.trunk[i * 2], step)
-        #     L.log_param('train_critic/q2_fc%d' % i, self.Q2.trunk[i * 2], step)
-
-
-# SAC-Discrete
-class QFunctionDiscrete(nn.Module):
-    """MLP for SAC-discrete."""
-    def __init__(self, obs_dim, action_dim, hidden_dim):
-        super().__init__()
-
-        self.trunk = nn.Sequential(
-            nn.Linear(obs_dim, hidden_dim), nn.ReLU(),
-            nn.Linear(hidden_dim, hidden_dim), nn.ReLU(),
-            nn.Linear(hidden_dim, action_dim)
-        )
-
-    def forward(self, obs):
-        # assert obs.size(0) == action.size(0)
-
-        q_values = self.trunk(obs)
-        # return q_values[:, action]
-        return q_values
-
-
-class CriticDiscrete(nn.Module):
-    def __init__(
-            self, obs_shape, action_shape, hidden_dim, encoder_type,
-            encoder_feature_dim, num_layers, num_filters, stride,
-            encoder_max_norm=None, encoder_max_norm_ord=None
-            ):
-        super().__init__()
-
-        self.encoder = make_encoder(
-            encoder_type, obs_shape, encoder_feature_dim, num_layers,
-            num_filters, stride,
-            max_norm=encoder_max_norm, max_norm_ord=encoder_max_norm_ord
-        )
-
-        self.Q1 = QFunctionDiscrete(
-            self.encoder.feature_dim, action_shape[0], hidden_dim
-        )
-        self.Q2 = QFunctionDiscrete(
-            self.encoder.feature_dim, action_shape[0], hidden_dim
-        )
-
-        self.outputs = dict()
-        self.apply(weight_init)
-
-    def forward(self, obs, detach_encoder=False):
-        z = self.encoder(obs, detach=detach_encoder)
-        # batch_size = obs.shape[0]
-        q1_arr = self.Q1(z)
-        q2_arr = self.Q2(z)
-
-        # q1 = q1_arr[torch.arange(batch_size), action]
-        # q2 = q2_arr[torch.arange(batch_size), action]
-
-        self.outputs['avg_q1'] = q1_arr
-        self.outputs['avg_q2'] = q2_arr
-
-        return q1_arr, q2_arr
-
-    def log(self, L, step, log_freq=LOG_FREQ):
-        if step % log_freq != 0:
-            return
-
-        self.encoder.log(L, step, log_freq)
-
-        for k, v in self.outputs.items():
-            L.log_histogram('train_critic/%s_hist' % k, v, step)
-
-        for i in range(3):
-            L.log_param('train_critic/q1_fc%d' % i, self.Q1.trunk[i * 2], step)
-            L.log_param('train_critic/q2_fc%d' % i, self.Q2.trunk[i * 2], step)
-
-
-class ActorDiscrete(nn.Module):
-    def __init__(
-        self, obs_shape, action_shape, hidden_dim, encoder_type,
-        encoder_feature_dim, num_layers, num_filters, stride,
-        encoder_max_norm=None,  encoder_max_norm_ord=None
-    ):
-        super().__init__()
-        self.encoder = make_encoder(
-            encoder_type, obs_shape, encoder_feature_dim, num_layers,
-            num_filters, stride,
-            max_norm=encoder_max_norm, max_norm_ord=encoder_max_norm_ord
-        )
-
-        self.trunk = nn.Sequential(
-            nn.Linear(self.encoder.feature_dim, hidden_dim), nn.ReLU(),
-            nn.Linear(hidden_dim, hidden_dim), nn.ReLU(),
-            nn.Linear(hidden_dim, action_shape[0])
-        )
-
-        self.outputs = dict()
-        self.apply(weight_init)
-
-    def forward(self, obs, detach_encoder=False):
-        z = self.encoder(obs, detach=detach_encoder)
-        logits = self.trunk(z)
-        return logits
-
-    def get_action(self, obs, detach_encoder=False):
-        logits = self(obs / 255.0, detach_encoder=detach_encoder)
-        policy_dist = Categorical(logits=logits)
-        action = policy_dist.sample()
-        # Action probabilities for calculating the adapted soft-Q loss
-        action_probs = policy_dist.probs
-        log_prob = F.log_softmax(logits, dim=1)
-        return action, log_prob, action_probs
-
-    def log(self, L, step, log_freq=LOG_FREQ):
-        if step % log_freq != 0:
-            return
-
-        for k, v in self.outputs.items():
-            L.log_histogram('train_actor/%s_hist' % k, v, step)
-
-        L.log_param('train_actor/fc1', self.trunk[0], step)
-        L.log_param('train_actor/fc2', self.trunk[2], step)
-        L.log_param('train_actor/fc3', self.trunk[4], step)
-
-
-# DQN
-class QNetwork(nn.Module):
-    def __init__(
-            self, obs_shape, action_dim, hidden_dim, encoder_type,
-            encoder_feature_dim, num_layers, num_filters, stride,
-            encoder_max_norm=None, encoder_max_norm_ord=None
-    ):
-        super().__init__()
-        self.encoder = make_encoder(
-            encoder_type, obs_shape, encoder_feature_dim, num_layers,
-            num_filters, stride,
-            max_norm=encoder_max_norm, max_norm_ord=encoder_max_norm_ord
-        )
-
-        self.q = nn.Sequential(
-            nn.Linear(self.encoder.feature_dim, hidden_dim),
-            nn.ReLU(),
-            nn.Linear(hidden_dim, action_dim),
-        )
-
-    def forward(self, obs, detach_encoder=False):
-        z = self.encoder(obs, detach=detach_encoder)
-        return self.q(z)
-    
-    def log(self, L, step, log_freq=LOG_FREQ):
-        if step % log_freq != 0:
-            return
-
-        self.encoder.log(L, step, log_freq)
 
 
 class Clamp(nn.Module):

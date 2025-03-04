@@ -12,27 +12,16 @@ def metric_func(x, y, cfg, metric_ub=None, step=None, L=None, override=None):
         dist = torch.linalg.norm(x-y, ord=1, dim=-1)
     elif bisim_dist_type == 'L1_mean':
         dist = torch.abs(x-y).mean(dim=-1)
-    elif bisim_dist_type == 'L1_rms':
-        dist = torch.linalg.norm(x-y, ord=1, dim=-1) * metric_ub / (2 * x.size(-1))
     elif bisim_dist_type == 'L2':
         dist = torch.linalg.norm(x-y, ord=2, dim=-1)
     elif bisim_dist_type == 'L2_mean':
         dist = torch.linalg.norm(x-y, ord=2, dim=-1)
         num_features = x.size(-1)
         dist = dist / num_features
-    elif bisim_dist_type == 'L2_rms':
-        dist = torch.linalg.norm(x-y, ord=2, dim=-1) * metric_ub / (2 * math.sqrt(x.size(-1)))
     elif bisim_dist_type == 'huber':
         dist = F.smooth_l1_loss(x, y, reduction='none').sum(dim=-1)
     elif bisim_dist_type == 'huber_mean':
         dist = F.smooth_l1_loss(x, y, reduction='none').mean(dim=-1)
-    elif bisim_dist_type == 'canberra':
-        eps = 1e-9
-        numerator = torch.abs(x - y)
-        denominator = torch.abs(x) + torch.abs(y) + eps
-        dist = (numerator / denominator).sum(dim=-1)
-        scaling_factor = cfg.metric_ub / cfg.encoder_feature_dim
-        dist = dist * scaling_factor
     elif bisim_dist_type == 'mico':
         beta = cfg.mico_beta
         cos_similarity = F.cosine_similarity(x, y, dim=-1, eps=1e-9)
@@ -42,11 +31,6 @@ def metric_func(x, y, cfg, metric_ub=None, step=None, L=None, override=None):
         if step is not None and L is not None:
             L.log('train_metric/angular_dist', (beta * base_distances).mean(), step)
             L.log('train_metric/norm_average', norm_average.mean(), step)
-    elif bisim_dist_type == 'scr':
-        k = 0.1
-        base_distances = (x * y).sum(dim=-1)
-        norm_average = (x.pow(2.).sum(dim=-1) + y.pow(2.).sum(dim=-1))
-        dist = norm_average - k * base_distances
     elif 'simsr' in bisim_dist_type:
         cosine_similarity = F.cosine_similarity(x, y, dim=-1, eps=1e-9)
         dist = 1 - cosine_similarity
