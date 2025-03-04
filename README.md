@@ -64,10 +64,15 @@ See `cfgs/README.md` for the list of hyperparameters and their explanations.
 
 ## References
 DeepMDP: [paper](https://proceedings.mlr.press/v97/gelada19a.html)
+
 Deep Bisimulation Control (DBC): [paper](https://arxiv.org/abs/2006.10742), [code](https://github.com/facebookresearch/deep_bisim4control/)
+
 Matching under Independent Couplings (MICo): [paper](https://proceedings.neurips.cc/paper_files/paper/2021/hash/fd06b8ea02fe5b1c2496fe1700e9d16c-Abstract.html), [code](https://github.com/google-research/google-research/blob/bb19948d367f3337c16176232e86069bf36b0bf5/mico)
+
 Robust DBC: [paper](https://arxiv.org/abs/2110.14096), [code](https://github.com/metekemertas/RobustBisimulation)
+
 Simple Distance-based State Representation (SimSR): [paper](https://arxiv.org/abs/2112.15303), [code](https://github.com/bit1029public/SimSR)
+
 Reducing Approximation Gap (RAP): [paper](https://proceedings.neurips.cc/paper_files/paper/2022/hash/eda9523faa5e7191aee1c2eaff669716-Abstract-Conference.html), [code](https://github.com/jianda-chen/RAP_distance)
 
 
