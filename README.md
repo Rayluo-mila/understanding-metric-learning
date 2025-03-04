@@ -1,6 +1,4 @@
 # Understanding the Effectiveness of Learning Behavioral Metrics in Deep Reinforcement Learning
-The official artifact for the paper "Understanding the Effectiveness of Learning Behavioral Metrics in Deep Reinforcement Learning", RLC 2025.
-
 A framework that affords the comparison of *different behavioral metrics learning methods* in deep reinforcement learning.
 
 ## Installation
@@ -13,7 +11,7 @@ A framework that affords the comparison of *different behavioral metrics learnin
 Default hyperparameters are stored in `cfgs/` directory.
 
 To run a minimal experiment, you can use the following command:
-### DMC (Pixel-based)
+### DMC (State-based)
 ```
 python main.py \
         env=dmc_state \
@@ -27,7 +25,7 @@ python main.py \
         use_vectorized_training_env=true
 ```
 
-### DMC (State-based)Trainer
+### DMC (Pixel-based)Trainer
 ```
 python main.py \
         env=dmc_pixel \
