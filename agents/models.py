@@ -90,8 +90,6 @@ class Actor(nn.Module):
     def forward(
         self, obs, compute_pi=True, compute_log_pi=True, detach_encoder=False, z=None
     ):
-        # print('obs shape', obs.shape) # Carla 1 x 9 x 84 x 420 = 317520
-        # sys.exit(0)
         z = self.encoder(obs, detach=detach_encoder)
 
         mu, log_std = self.trunk(z).chunk(2, dim=-1)

@@ -47,7 +47,7 @@ agent:
   batch_size: 128
   hidden_dim: 256
   k: 3  # Number of steps for inverse model
-  transition_model_type: deterministic  # Choices: ['', 'deterministic', 'probabilistic(_v2)', 'ensemble(_v2)']
+  transition_model_type: deterministic  # Choices: ['', 'deterministic', 'probabilistic', 'ensemble', 'ensemble_det']
 
   # Actor settings
   actor_lr: 1e-3
@@ -122,8 +122,6 @@ agent:
 wandb_proj_name: DMCState-finger-spin
 wandb_update_freq: 1
 port: 2000
-save_train_video: false
-save_video: false
 
 # For reporting result in the performance table
 perf_report_start_step: [950000, 1950000]

@@ -241,58 +241,6 @@ class PixelEncoderAvgL1Normed(BasePixelEncoder):
         return h_norm
 
 
-class PixelEncoderCarla096(PixelEncoder):
-    """Convolutional encoder of pixels observations."""
-    def __init__(self, obs_shape, feature_dim, num_layers=2, num_filters=32, stride=1):
-        super(PixelEncoder, self).__init__()
-        print('Building PE-Carla096')
-        print(f'\tNlayers = {num_layers}, Nfilters = {num_filters}, dim(feats) = {feature_dim}')
-        assert len(obs_shape) == 3
-
-        self.feature_dim = feature_dim
-        self.num_layers = num_layers
-
-        self.convs = nn.ModuleList(
-            [nn.Conv2d(obs_shape[0], num_filters, 3, stride=2)]
-        )
-        for i in range(num_layers - 1):
-            self.convs.append(nn.Conv2d(num_filters, num_filters, 3, stride=stride))
-
-        #out_dims = 100  # if defaults change, adjust this as needed
-        #out_dims = int( (84 * (84*5)) / 4 )
-        # 35 = 84 / 2 - 3 - 2 - 2, 203 = 420 / 2 - 3 - 2 - 2
-        out_dims = 35 * 203
-        self.fc = nn.Linear(num_filters * out_dims, self.feature_dim)
-        self.ln = nn.LayerNorm(self.feature_dim)
-
-        self.outputs = dict()
-
-
-class PixelEncoderCarla098(PixelEncoder):
-    """Convolutional encoder of pixels observations."""
-    def __init__(self, obs_shape, feature_dim, num_layers=2, num_filters=32, stride=1):
-        super(PixelEncoder, self).__init__()
-        print('Building PE-Carla098')
-
-        assert len(obs_shape) == 3
-
-        self.feature_dim = feature_dim
-        self.num_layers = num_layers
-
-        self.convs = nn.ModuleList()
-        self.convs.append(nn.Conv2d(obs_shape[0], 64, 5, stride=2))
-        self.convs.append(nn.Conv2d(64, 128, 3, stride=2))
-        self.convs.append(nn.Conv2d(128, 256, 3, stride=2))
-        self.convs.append(nn.Conv2d(256, 256, 3, stride=2))
-
-        #out_dims = 56  # 3 cameras
-        out_dims = 100  # 5 cameras
-        self.fc = nn.Linear(256 * out_dims, self.feature_dim)
-        self.ln = nn.LayerNorm(self.feature_dim)
-
-        self.outputs = dict()
-
-
 class IdentityEncoder(nn.Module):
     def __init__(self, obs_shape, feature_dim, num_layers, num_filters, *args, **kwargs):
         super().__init__()
@@ -438,8 +386,6 @@ _AVAILABLE_ENCODERS = {'pixel': PixelEncoder,
                        'pixel_layernormed': PixelEncoder,
                        'pixel_l2normed': PixelEncoderL2Normed,
                        'pixel_avg_l1normed': PixelEncoderAvgL1Normed,
-                       'pixelCarla096': PixelEncoderCarla096,
-                       'pixelCarla098': PixelEncoderCarla098,
                        'pixel_rmsnormed': PixelEncoderRMSNormed,
                        'identity': IdentityEncoder,
                        'mlp': MLPEncoder,

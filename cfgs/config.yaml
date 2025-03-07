@@ -73,8 +73,6 @@ agent:
   prob_dist: ''
   encoder_max_norm: false
   use_target_encoder: false
-  repr_upd_phase_length: 1
-  q_upd_phase_length: 1
   model_based_on_policy_metric_update: false
   no_phi_q_star: false
   rp: true
@@ -82,10 +80,7 @@ agent:
   rzp_coef: 1.0
   rp_detach_encoder: false
   zp_detach_encoder: false
-  fixed_policy_after_n_steps: 0
   metric_loss_type: L2  # Choices: ['L2', 'huber']
-  use_uniformly_sampled_states: false  # Only works when using bsm metric type
-  encoder_norm_scale: 1.0
   c_R: 0.5
   c_T: 0.5
   mico_beta: 0.1

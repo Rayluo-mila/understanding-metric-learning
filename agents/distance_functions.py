@@ -50,15 +50,7 @@ def prob_metric_func(mu, mu2, sigma, sigma2, cfg, metric_ub=None):
             sigma_dist = torch.linalg.norm(sigma - sigma2, ord=2, dim=-1)
             dist = torch.sqrt(mu_dist.pow(2) + sigma_dist.pow(2))
     else:
-        if 'L2_rms' in cfg.prob_dist:
-            mu_dist = torch.linalg.norm(mu - mu2, ord=2, dim=-1)  # [0, 2sqrt(n)]
-            sigma_dist = torch.linalg.norm(sigma - sigma2, ord=2, dim=-1)  # [0, around sqrt(n)] as max_sigma=1
-            if 'nostd' in cfg.prob_dist:
-                dist = mu_dist * metric_ub / (2 * math.sqrt(mu.size(-1)))
-            else:
-                denom = math.sqrt(5 * mu.size(-1))
-                dist = torch.sqrt(mu_dist.pow(2) + sigma_dist.pow(2)) * metric_ub / denom
-        elif 'L2_mean' in cfg.prob_dist:
+        if 'L2_mean' in cfg.prob_dist:
             if 'nostd' in cfg.prob_dist:
                 dist = (mu - mu2).abs().mean(dim=-1)
             else:
