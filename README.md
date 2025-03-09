@@ -11,8 +11,8 @@ A framework that affords the comparison of *different behavioral metrics learnin
 ## To run the experiments
 Default hyperparameters are stored in `cfgs/` directory.
 
-To run a minimal experiment, you can use the following command:
-### DMC (State-based)
+To run a minimal experiment (see **Hyperparameters** Section for details on configuring settings), you can use the following command:
+### State-based DMC (IID Gaussian Noise)
 ```
 python main.py \
         env=dmc_state \
@@ -26,7 +26,7 @@ python main.py \
         use_vectorized_training_env=true
 ```
 
-### DMC (Pixel-based)Trainer
+### Pixel-based DMC (Natural Video Background)
 ```
 python main.py \
         env=dmc_pixel \
