@@ -83,6 +83,7 @@ class DMCStateTrainer(BaseTrainer):
                                 proj_matrix=self.proj_matrix, inv_proj_matrix=self.inv_proj_matrix)
             self.true_obs_dim = self.env.true_obs_dim
             self.physical_state_dim = self.env.physical_state_dim
+            train_bg_source = self.env.get_bg_source()
 
         if self.cfg.num_eval_episodes == 1:
             self.eval_env = make_env(cfg, seed=cfg.seed, is_eval=False,

@@ -18,7 +18,7 @@ agents:
     metric_loss_type: 'L2'
     encoder_max_norm: false
 
-  rdbc:  # https://github.com/metekemertas/RobustBisimulation/tree/main
+  dbcnormed:  # https://github.com/metekemertas/RobustBisimulation/tree/main
   # huber_mean for z_dist and z'_dist may require max_norm to scale feature_dim times
   # but here we stick to the original setting
     class_path: agents.bisim_agent_sac.BisimAgent
@@ -29,7 +29,7 @@ agents:
     metric_loss_type: 'L2'
     encoder_max_norm: true
   
-  rdbc-huber-target:
+  dbcnormed-huber-target:
     class_path: agents.bisim_agent_sac.BisimAgent
     transition_model_type: 'probabilistic'
     bisim_dist: 'huber_mean'
@@ -39,7 +39,7 @@ agents:
     use_target_encoder: true
     metric_loss_type: 'huber'
   
-  rdbc-huber:
+  dbcnormed-huber:
     class_path: agents.bisim_agent_sac.BisimAgent
     transition_model_type: 'probabilistic'
     bisim_dist: 'huber_mean'
@@ -48,7 +48,7 @@ agents:
     encoder_max_norm: true
     metric_loss_type: 'huber'
   
-  rdbc-target:
+  dbcnormed-target:
     class_path: agents.bisim_agent_sac.BisimAgent
     transition_model_type: 'probabilistic'
     bisim_dist: 'huber_mean'
@@ -57,7 +57,7 @@ agents:
     encoder_max_norm: true
     use_target_encoder: true
 
-  rdbc-sum:  # a fixed version of RDBC
+  dbcnormed-sum:  # a fixed version of DBC-normed
     class_path: agents.bisim_agent_sac.BisimAgent
     transition_model_type: 'probabilistic'
     bisim_dist: 'huber'
@@ -66,7 +66,7 @@ agents:
     metric_loss_type: 'L2'
     encoder_max_norm: true
   
-  rdbc-detachrz:  # https://github.com/metekemertas/RobustBisimulation/tree/main
+  dbcnormed-detachrz:  # https://github.com/metekemertas/RobustBisimulation/tree/main
   # huber_mean for z_dist and z'_dist may require max_norm to scale feature_dim times
   # but here we stick to the original setting
     class_path: agents.bisim_agent_sac.BisimAgent
@@ -174,12 +174,9 @@ agents:
     bisim_dist: 'huber_mean'
     r_dist: 'huber'
     metric_loss_type: 'L2'
-    # clamp_target_q: true
-    # on_policy_metric_update: true
-    # use_target_encoder: true
     bisim_coef: 0.5
 
-  sac-isolated-metric-rdbc:
+  sac-isolated-metric-dbcnormed:
     class_path: agents.isolated_metric_agent.IsolatedMetricSACAgent
     encoder_max_norm: false
     encoder_max_norm_metric: true
@@ -188,21 +185,14 @@ agents:
     r_dist: 'huber'
     prob_dist: 'huber_mean'
     metric_loss_type: 'L2'
-    # clamp_target_q: true
-    # on_policy_metric_update: true
-    # use_target_encoder: true
     bisim_coef: 0.5
 
   sac-isolated-metric-mico:
     class_path: agents.isolated_metric_agent.IsolatedMetricSACAgent
     bisim_dist: 'mico'
     r_dist: 'L1'
-    rp: false
-    zp: false
     use_target_encoder: true
     metric_loss_type: 'huber'
-    # clamp_target_q: true
-    # on_policy_metric_update: true
   
   sac-isolated-metric-simsr:
     class_path: agents.isolated_metric_agent.IsolatedMetricSACAgent

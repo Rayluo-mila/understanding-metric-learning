@@ -76,7 +76,7 @@ agent:
 
   # Metric
   encoder_max_norm: false
-  encoder_max_norm_override: 0  # 0 for default max norm in RDBC
+  encoder_max_norm_override: 0  # 0 for default max norm in DBC-normed
   use_target_encoder: false
   bisim_dist: L1
   r_dist: L1

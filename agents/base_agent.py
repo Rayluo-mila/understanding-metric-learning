@@ -44,11 +44,9 @@ class SACAgent(object):
         self.decoder_type = cfg.decoder_type
         self.sigma = 0.5
 
-        # Metric / Q
+        # Metric related
         self.max_reward = cfg.max_reward
         self.min_reward = cfg.min_reward
-        self.max_q_value = cfg.max_reward / (1 - cfg.discount) if cfg.max_reward is not None else None
-        self.min_q_value = cfg.min_reward / (1 - cfg.discount) if cfg.min_reward is not None else None
         self.metric_ub = cfg.c_R * (self.max_reward - self.min_reward) / (1 - cfg.c_T)
         self.encoder_max_norm, self.encoder_max_norm_ord = get_max_norm(self.metric_ub, cfg)
 
@@ -164,9 +162,6 @@ class SACAgent(object):
         with torch.no_grad():
             _, policy_action, log_pi, _ = self.actor(next_obs)
             target_Q1, target_Q2 = self.critic_target(next_obs, policy_action)
-            if self.cfg.clamp_target_q:
-                target_Q1 = torch.clamp(target_Q1, self.min_q_value, self.max_q_value)
-                target_Q2 = torch.clamp(target_Q2, self.min_q_value, self.max_q_value)
             target_V = torch.min(target_Q1,
                                  target_Q2) - self.alpha.detach() * log_pi
             if self.cfg.use_done_signal:

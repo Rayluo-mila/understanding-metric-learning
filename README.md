@@ -1,4 +1,4 @@
-# Understanding the Effectiveness of Learning Behavioral Metrics in Deep Reinforcement Learning
+# Understanding Behavioral Metric Learning in Deep RL: A Large-Scale Study on Distracting Environments
 A framework that affords the comparison of *different behavioral metrics learning methods* in deep reinforcement learning.
 
 ## Installation
@@ -6,7 +6,15 @@ A framework that affords the comparison of *different behavioral metrics learnin
 
 - Install packages in `requirements.txt`: `pip install -r requirements.txt`
 
-- Prepare Kinetics-400 dataset for natural images / video backgrounds: Download the [Kinetics-400 dataset](https://github.com/Showmax/kinetics-downloader). Extract the videos under `driving_car` label from the train dataset to `environments/dmc2gym/res/train_video` and `environments/dmc2gym/res/eval_video`, or store in some other directory you want and set the `resource_files` and `eval_resource_files` in `cfgs/env/dmc_pixel.yaml` to the specific directory.
+- Prepare Kinetics-400 dataset for natural images / video backgrounds (choose one of the two): 
+    - (Recommended, for reproducing our result) Download the preprocessed dataset from [Google Drive](https://drive.google.com/file/d/1dkrB_2RWztCrEp_0A4UiEYtkqILgo5Hv/view?usp=sharing) and extract it to `environments/dmc2gym/res/`. The directory structure should look like:
+        ```
+        environments/dmc2gym/res/
+            ├── train_video
+            └── eval_video
+        ```
+
+    - (For better control of the dataset) Download the [Kinetics-400 dataset](https://github.com/Showmax/kinetics-downloader). Extract the videos under `driving_car` label from the train dataset to `environments/dmc2gym/res/train_video` and `environments/dmc2gym/res/eval_video`, or store in some other directory you want and set the `resource_files` and `eval_resource_files` in `cfgs/env/dmc_pixel.yaml` to the specific directory.
 
 ## To run the experiments
 Default hyperparameters are stored in `cfgs/` directory.
@@ -73,7 +81,7 @@ See `cfgs/agent_configs.yaml` for the list of available agents. Pass `agent.name
 - `agents/`: Contains the implementations of the agents, including encoders, decoders, and other models.
     - `base_agent.py`: The base class for the agents, providing vanilla [Soft Actor-Critic](https://github.com/haarnoja/sac) algorithm as the base agent for fair comparison.
     - `deepmdp_agent.py`: The DeepMDP agent ([reference implementation](https://github.com/facebookresearch/deep_bisim4control/blob/main/agent/deepmdp_agent.py)).
-    - `bisim_agent_sac.py`: The [DBC](https://github.com/google-deepmind/dm_control) and [RDBC](https://github.com/metekemertas/RobustBisimulation) agent.
+    - `bisim_agent_sac.py`: The [DBC](https://github.com/google-deepmind/dm_control) and [DBC-normed](https://github.com/metekemertas/RobustBisimulation) agent.
     - `mico_agent_sac.py`: The [MICo](https://github.com/google-research/google-research/blob/bb19948d367f3337c16176232e86069bf36b0bf5/mico) and [SimSR](https://github.com/bit1029public/SimSR) agent.
     - `rap_agent_sac.py`: The [RAP](https://github.com/jianda-chen/RAP_distance) agent.
     - `isolated_metric_agent.py`: The agent for isolated metric evaluation (Sec. 4.4 in our paper).
@@ -89,13 +97,15 @@ See `cfgs/agent_configs.yaml` for the list of available agents. Pass `agent.name
 ## References
 DeepMind Control Suite (DMC): [paper](https://arxiv.org/abs/1801.00690), [code](https://github.com/google-deepmind/dm_control)
 
+Soft Actor-Critic + Autoencoder (SAC + AE): [paper](https://arxiv.org/abs/1910.01741), [code](https://github.com/denisyarats/pytorch_sac_ae)
+
 DeepMDP: [paper](https://proceedings.mlr.press/v97/gelada19a.html)
 
 Deep Bisimulation Control (DBC): [paper](https://arxiv.org/abs/2006.10742), [code](https://github.com/facebookresearch/deep_bisim4control)
 
 Matching under Independent Couplings (MICo): [paper](https://proceedings.neurips.cc/paper_files/paper/2021/hash/fd06b8ea02fe5b1c2496fe1700e9d16c-Abstract.html), [code](https://github.com/google-research/google-research/blob/bb19948d367f3337c16176232e86069bf36b0bf5/mico)
 
-Robust DBC: [paper](https://arxiv.org/abs/2110.14096), [code](https://github.com/metekemertas/RobustBisimulation)
+DBC-normed: [paper](https://arxiv.org/abs/2110.14096), [code](https://github.com/metekemertas/RobustBisimulation)
 
 Simple Distance-based State Representation (SimSR): [paper](https://arxiv.org/abs/2112.15303), [code](https://github.com/bit1029public/SimSR)
 

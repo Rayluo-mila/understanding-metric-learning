@@ -60,10 +60,8 @@ agent:
   num_layers: 4
   num_filters: 32
   use_done_signal: false
-  clamp_target_q: false
   clip_grad_norm_critic: 0
   clip_grad_norm_actor: 0
-  single_repr_head: false
 
   # Metric
   metric_type: pbsm

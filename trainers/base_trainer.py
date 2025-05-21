@@ -70,10 +70,14 @@ def make_agent(obs_shape, action_shape, actor_action_max, cfg, L, max_reward=Non
     cfg.max_reward = max_reward
     cfg.min_reward = min_reward
 
-    if 'norm' in cfg.encoder_post_processing and (cfg.encoder_type == 'pixel' or cfg.encoder_type == 'mlp'):
+    if 'simsr' in agent_name:
+        cfg.encoder_type += '_l2normed'
+        if 'isolated' in agent_name:
+            cfg.encoder_type_metric += '_l2normed'
+    if 'norm' in cfg.encoder_post_processing and (cfg.encoder_type == 'pixel' or cfg.encoder_type == 'mlp' or cfg.encoder_type == 'mlp_l2normed'):
         post_processing_str = cfg.encoder_post_processing.replace('_', '')
         cfg.encoder_type += f'_{post_processing_str}ed'
-    if 'norm' in cfg.encoder_post_processing_metric and (cfg.encoder_type_metric == 'pixel' or cfg.encoder_type_metric == 'mlp'):
+    if 'norm' in cfg.encoder_post_processing_metric and (cfg.encoder_type_metric == 'pixel' or cfg.encoder_type_metric == 'mlp' or cfg.encoder_type_metric == 'mlp_l2normed'):
         post_processing_str = cfg.encoder_post_processing_metric.replace('_', '')
         cfg.encoder_type_metric += f'_{post_processing_str}ed'
 

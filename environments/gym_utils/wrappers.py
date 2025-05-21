@@ -224,7 +224,7 @@ class GaussianNoiseWrapper(Wrapper):
 
 
 class GaussianRandomProjectionWrapper(Wrapper):
-    def __init__(self, env, noise_dim, noise_std, shared_proj_matrix, shared_inv_proj_matrix):
+    def __init__(self, env, noise_dim, noise_std, shared_proj_matrix, shared_inv_proj_matrix, noise_mean):
         """
         Given an environment that produces vector observations, this environment wraps it and
         projects the observation from R^m to a higher-dimensional space R^(m + noise_dim)
@@ -241,6 +241,7 @@ class GaussianRandomProjectionWrapper(Wrapper):
         self.true_obs_dim = env.observation_space.shape[0]
         self.noise_dim = noise_dim
         self.noise_std = noise_std
+        self.noise_mean = noise_mean
         self.noisy_obs_dim = self.true_obs_dim + noise_dim
 
         self.proj_matrix = shared_proj_matrix
@@ -265,6 +266,6 @@ class GaussianRandomProjectionWrapper(Wrapper):
         return obs, reward, done, truncated, info
 
     def add_noise(self, obs):
-        noised_obs = append_white_noise(obs, self.noise_dim, self.noise_std)
+        noised_obs = append_white_noise(obs, self.noise_dim, self.noise_std, self.noise_mean)
         noised_obs = random_proj(noised_obs, self.proj_matrix)
         return noised_obs
