@@ -97,7 +97,7 @@ See `cfgs/agent_configs.yaml` for the list of available agents. Pass `agent.name
     - `mico_agent_sac.py`: The [MICo](https://github.com/google-research/google-research/blob/bb19948d367f3337c16176232e86069bf36b0bf5/mico) and [SimSR](https://github.com/bit1029public/SimSR) agents.
     - `rap_agent_sac.py`: The [RAP](https://github.com/jianda-chen/RAP_distance) agent.
     - `isolated_metric_agent.py`: The agent for isolated metric evaluation (Sec. 4.4 and Sec. 5.3 in our paper).
-    - `distance_function.py`: The distance functions ($\hat{d}_R$, $\hat{d}_T$ and $d_\Psi$ in Table 1) used in the agents.
+    - `distance_function.py`: The distance functions (d̂_R, d̂_T, and d_Ψ in Table 1) used in the agents.
     - `encoder.py`: The encoder used in the agents.
     - `transition_model.py`: The transition model used in the agents.
     - `model.py`: The actors and critics used in the agents.
