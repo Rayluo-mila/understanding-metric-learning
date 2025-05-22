@@ -1,6 +1,6 @@
 # Understanding Behavioral Metric Learning in Deep RL: A Large-Scale Study on Distracting Environments
 
-"Understanding Behavioral Metric Learning in Deep RL: A Large-Scale Study on Distracting Environments", RLC 2025
+📄 "Understanding Behavioral Metric Learning in Deep RL: A Large-Scale Study on Distracting Environments", RLC 2025
 by [Ziyan "Ray" Luo](https://zyluo.netlify.app/), [Tianwei Ni](https://twni2016.github.io/), [Pierre-Luc Bacon](https://pierrelucbacon.com/), [Doina Precup](https://mila.quebec/en/directory/doina-precup), [Xujie Si](https://www.cs.toronto.edu/~six/)
 
 <p align="center">
@@ -10,7 +10,7 @@ by [Ziyan "Ray" Luo](https://zyluo.netlify.app/), [Tianwei Ni](https://twni2016.
 A modular framework that affords the comparison of *different behavioral metrics learning methods* in deep reinforcement learning.
 
 
-## Installation
+## ⚙️ Installation
 - Python (3.7.0 or higher recommended, and [Anaconda](https://www.anaconda.com/) recommended to set up a new environment)
 
 - Install packages in `requirements.txt`: `pip install -r requirements.txt`
@@ -25,11 +25,11 @@ A modular framework that affords the comparison of *different behavioral metrics
 
     - (For better control of the dataset) Download the [Kinetics-400 dataset](https://github.com/Showmax/kinetics-downloader). Extract the videos under `driving_car` label from the train dataset to `environments/dmc2gym/res/train_video` and `environments/dmc2gym/res/eval_video`, or store in some other directory you want and set the `resource_files` and `eval_resource_files` in `cfgs/env/dmc_pixel.yaml` to the specific directory.
 
-## To run the experiments
-Default hyperparameters are stored in `cfgs/` directory.
+## 🚀 To run the minimal experiments
 
 To run a minimal experiment (see **Hyperparameters** Section for details on configuring settings), you can use the following command:
-### State-based DMC (IID Gaussian Noise)
+
+### 🧪 State-based DMC (IID Gaussian Noise)
 ```
 python main.py \
         env=dmc_state \
@@ -43,7 +43,7 @@ python main.py \
         use_vectorized_training_env=true
 ```
 
-### Pixel-based DMC (Natural Video Background)
+### 🖼️ Pixel-based DMC (Natural Video Background)
 ```
 python main.py \
         env=dmc_pixel \
@@ -55,10 +55,13 @@ python main.py \
         use_vectorized_training_env=true
 ```
 
-## Available Agents
+Default hyperparameters are stored in `cfgs/` directory.
+
+
+## 🧠 Available Agents
 See `cfgs/agent_configs.yaml` for the list of available agents. Pass `agent.name=<agent_name>` to the `main.py` script to use a specific agent.
 
-## Hyperparameters
+## 📊 Hyperparameters
 ### Explanation of Hyperparameters
 - Key hyperparameters to reproduce our results:
     - `env`: The environment to run the experiments (`dmc_pixel` or `dmc_state`).
@@ -69,7 +72,7 @@ See `cfgs/agent_configs.yaml` for the list of available agents. Pass `agent.name
     - `use_vectorized_training_env`: Whether to use vectorized training environments.
     - `noise_source`: The type of noise setting.
         - For state-based DMC, choose from `[noise, random_proj]`, which stands for IID Gaussian noise and IID Gaussian noise with random projection, respectively.
-        - For pixel-based DMC, choose from `[none, images_gray, images, video_gray, video, noise]`, which stands for clean background, natural images background (grayscale and colored), natural video background (grayscale and colored), and IID Gaussian noise, respectively.
+        - For pixel-based DMC, choose from `[none, images_gray, images, video_gray, video, noise]`, which stands for clean background, natural images background (grayscale and colored), natural video background (grayscale and colored), and IID Gaussian noise (per-pixel), respectively.
     - `noise_dim`: The dimension of the noise vector in state-based IID Gaussian noise (with / without random projection).
     - `noise_std`: The standard deviation of the noise in state-based IID Gaussian noise (with / without random projection).
     - `agent.encoder_post_processing`: In default, pixel-based settings use encoder with LayerNorm while state-based settings use an encoder without LayerNorm. Set to `no_layer_norm` for pixel-based environments, and `layer_norm` for state-based environments if you want to use the other setting.
@@ -85,7 +88,7 @@ See `cfgs/agent_configs.yaml` for the list of available agents. Pass `agent.name
     3. Domain-specific hyperparameters in `cfgs/env/*.yaml`.
     4. High-level hyperparameters specified by `cfgs/config.yaml`.
 
-## Code Structure
+## 🗂️ Code Structure
 - `main.py`: The entry to run the experiments.
 - `agents/`: Contains the implementations of the agents, including encoders, decoders, and other models.
     - `base_agent.py`: The base class for the agents, providing vanilla [Soft Actor-Critic](https://github.com/haarnoja/sac) algorithm as the base agent for fair comparison.
@@ -93,8 +96,8 @@ See `cfgs/agent_configs.yaml` for the list of available agents. Pass `agent.name
     - `bisim_agent_sac.py`: The [DBC](https://github.com/google-deepmind/dm_control) and [DBC-normed](https://github.com/metekemertas/RobustBisimulation) agents.
     - `mico_agent_sac.py`: The [MICo](https://github.com/google-research/google-research/blob/bb19948d367f3337c16176232e86069bf36b0bf5/mico) and [SimSR](https://github.com/bit1029public/SimSR) agents.
     - `rap_agent_sac.py`: The [RAP](https://github.com/jianda-chen/RAP_distance) agent.
-    - `isolated_metric_agent.py`: The agent for isolated metric evaluation (Sec. 4.4 in our paper).
-    - `distance_function.py`: The distance functions ($d_\mathcal{X}$, $d_R$ and $d_\Psi$) used in the agents.
+    - `isolated_metric_agent.py`: The agent for isolated metric evaluation (Sec. 4.4 and Sec. 5.3 in our paper).
+    - `distance_function.py`: The distance functions ($\hat{d}_R$, $\hat{d}_T$ and $d_\Psi$ in Table 1) used in the agents.
     - `encoder.py`: The encoder used in the agents.
     - `transition_model.py`: The transition model used in the agents.
     - `model.py`: The actors and critics used in the agents.
@@ -104,26 +107,35 @@ See `cfgs/agent_configs.yaml` for the list of available agents. Pass `agent.name
 - `utils/`: Contains utility functions.
 
 
-## Questions and Issues
-If you have any questions or issues, please feel free to email us (ziyan.luo@mail.mcgill.ca, twni2016@gmail.com), or open an issue on GitHub. We glad to hear any form of feedback and will try our best to help you.
+## ❓ Questions and Issues
+If you have any questions or issues, please feel free to email us (ziyan.luo@mail.mcgill.ca, twni2016@gmail.com), or open an issue on GitHub. We glad to hear any form of feedback, and will try our best to help you.
 
 
-## References
-DeepMind Control Suite (DMC): [paper](https://arxiv.org/abs/1801.00690), [code](https://github.com/google-deepmind/dm_control)
+## 📚 References
 
-Soft Actor-Critic + Autoencoder (SAC + AE): [paper](https://arxiv.org/abs/1910.01741), [code](https://github.com/denisyarats/pytorch_sac_ae)
+- **DeepMind Control Suite (DMC)**  
+  [📄 Paper](https://arxiv.org/abs/1801.00690) | [💻 Code](https://github.com/google-deepmind/dm_control)
 
-DeepMDP: [paper](https://proceedings.mlr.press/v97/gelada19a.html)
+- **Soft Actor-Critic + Autoencoder (SAC + AE)**  
+  [📄 Paper](https://arxiv.org/abs/1910.01741) | [💻 Code](https://github.com/denisyarats/pytorch_sac_ae)
 
-Deep Bisimulation Control (DBC): [paper](https://arxiv.org/abs/2006.10742), [code](https://github.com/facebookresearch/deep_bisim4control)
+- **DeepMDP**  
+  [📄 Paper](https://proceedings.mlr.press/v97/gelada19a.html)
 
-Matching under Independent Couplings (MICo): [paper](https://proceedings.neurips.cc/paper_files/paper/2021/hash/fd06b8ea02fe5b1c2496fe1700e9d16c-Abstract.html), [code](https://github.com/google-research/google-research/blob/bb19948d367f3337c16176232e86069bf36b0bf5/mico)
+- **Deep Bisimulation Control (DBC)**  
+  [📄 Paper](https://arxiv.org/abs/2006.10742) | [💻 Code](https://github.com/facebookresearch/deep_bisim4control)
 
-DBC-normed: [paper](https://arxiv.org/abs/2110.14096), [code](https://github.com/metekemertas/RobustBisimulation)
+- **Matching under Independent Couplings (MICo)**  
+  [📄 Paper](https://proceedings.neurips.cc/paper_files/paper/2021/hash/fd06b8ea02fe5b1c2496fe1700e9d16c-Abstract.html) | [💻 Code](https://github.com/google-research/google-research/blob/bb19948d367f3337c16176232e86069bf36b0bf5/mico)
 
-Simple Distance-based State Representation (SimSR): [paper](https://arxiv.org/abs/2112.15303), [code](https://github.com/bit1029public/SimSR)
+- **DBC-normed**  
+  [📄 Paper](https://arxiv.org/abs/2110.14096) | [💻 Code](https://github.com/metekemertas/RobustBisimulation)
 
-Reducing Approximation Gap (RAP): [paper](https://proceedings.neurips.cc/paper_files/paper/2022/hash/eda9523faa5e7191aee1c2eaff669716-Abstract-Conference.html), [code](https://github.com/jianda-chen/RAP_distance)
+- **Simple Distance-based State Representation (SimSR)**  
+  [📄 Paper](https://arxiv.org/abs/2112.15303) | [💻 Code](https://github.com/bit1029public/SimSR)
+
+- **Reducing Approximation Gap (RAP)**  
+  [📄 Paper](https://proceedings.neurips.cc/paper_files/paper/2022/hash/eda9523faa5e7191aee1c2eaff669716-Abstract-Conference.html) | [💻 Code](https://github.com/jianda-chen/RAP_distance)
 
 
 
