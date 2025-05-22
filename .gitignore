@@ -11,6 +11,5 @@ wandb
 *.sh
 *.whl
 *.csv
-*.pdf
 *.tex
 *.npy
