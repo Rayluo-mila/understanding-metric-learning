@@ -14,7 +14,7 @@ eval_resource_files: environments/dmc2gym/res/eval_video/*.mp4
 noise_source: none  # Choices: ['noise', 'none']
 noise_std: 1.0
 noise_dim: 32
-eval_noise_mean: 1.0
+eval_noise_mean: 0.0  # default: 0.0 (ID); Can specify some other values for OOD generalization test
 random_proj_std: 1.0
 random_proj_dim: 'identical'  # 'identical' | int
 

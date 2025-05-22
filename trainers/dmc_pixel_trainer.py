@@ -101,7 +101,6 @@ class DMCPixelTrainer(BaseTrainer):
         self.homo_eval_env = AsyncVectorEnv([make_env_fn(
             cfg, seed=cfg.seed+cfg.num_parallel_envs+1+i, bg_source=deepcopy(homo_eval_bg_source)
             ) for i in range(cfg.num_eval_episodes)], worker=worker_shared_memory_no_truncation_reset)
-        # TODO: adapt to all 3 levels
         self.eval_train_env = AsyncVectorEnv([make_env_fn(
             cfg, seed=cfg.seed+cfg.num_parallel_envs+1+i, bg_source=deepcopy(train_bg_source)
             ) for i in range(cfg.num_eval_episodes)], worker=worker_shared_memory_no_truncation_reset)
@@ -405,7 +404,7 @@ class DMCPixelTrainer(BaseTrainer):
                 with rl_utils.eval_mode(self.agent):
                     pos_score, neg_score, pos_score_L2, neg_score_L2 = self.eval_bisimilar_states(
                         anchor_obses, positive_obses, negative_obses, self.agent.metric_func,
-                        encoder)  # TODO: action distance
+                        encoder)
                     pos_score_train, _, pos_score_L2_train, _ = self.eval_bisimilar_states(
                         anchor_obses, positive_train_obses, negative_obses, self.agent.metric_func,
                         encoder)

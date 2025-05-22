@@ -387,7 +387,7 @@ class DMCStateTrainer(BaseTrainer):
                 with rl_utils.eval_mode(self.agent):
                     pos_score, neg_score, pos_score_L2, neg_score_L2 = self.eval_bisimilar_states(
                         anchor_obses, positive_obses, negative_obses, self.agent.metric_func,
-                        encoder)  # TODO: action distance
+                        encoder)
                     pos_score_train, _, pos_score_L2_train, _ = self.eval_bisimilar_states(
                         anchor_obses, positive_train_obses, negative_obses, self.agent.metric_func,
                         encoder)
