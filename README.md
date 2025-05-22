@@ -4,7 +4,7 @@
 by [Ziyan "Ray" Luo](https://zyluo.netlify.app/), [Tianwei Ni](https://twni2016.github.io/), [Pierre-Luc Bacon](https://pierrelucbacon.com/), [Doina Precup](https://mila.quebec/en/directory/doina-precup), [Xujie Si](https://www.cs.toronto.edu/~six/)
 
 <p align="center">
-  <img src="environments/noise_illustration.png" alt="Examples of background noise settings in pixel-based domains." width="500"/>
+  <img src="environments/noise_illustration.png" alt="Examples of background noise settings in pixel-based domains." width="800"/>
 </p>
 
 A modular framework that affords the comparison of *different behavioral metrics learning methods* in deep reinforcement learning.
