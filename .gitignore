@@ -5,7 +5,6 @@
 *.err
 *.tfevents.*
 *.pk
-*.png
 wandb
 *.mp4
 *.sh
