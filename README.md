@@ -58,11 +58,11 @@ python main.py \
         use_vectorized_training_env=true
 ```
 
-Default hyperparameters are stored in `cfgs/` directory.
+Default hyperparameters are stored in [`cfgs/`](https://github.com/Rayluo-mila/understanding-metric-learning/tree/main/cfgs) directory.
 
 
 ## 🧠 Available Agents
-See `cfgs/agent_configs.yaml` for the list of available agents. Pass `agent.name=<agent_name>` to the `main.py` script to use a specific agent.
+See [`cfgs/agent_configs.yaml`](https://github.com/Rayluo-mila/understanding-metric-learning/blob/main/cfgs/agent_configs.yaml) for the list of available agents. Pass `agent.name=<agent_name>` to the `main.py` script to use a specific agent.
 
 ## 📊 Hyperparameters
 ### Explanation of Hyperparameters
@@ -130,27 +130,27 @@ Each source builds upon the lower-priority layers, allowing flexible but control
 
 ## 🗂️ Code Structure
 
-- `main.py`: Entry point for running experiments.
+- [`main.py`](https://github.com/Rayluo-mila/understanding-metric-learning/blob/main/main.py): Entry point for running experiments.
 
-- `agents/`: Contains all agent implementations, including encoders, decoders, and other models.
-    - `base_agent.py`: The base class for the agents, providing vanilla [Soft Actor-Critic](https://github.com/haarnoja/sac) algorithm as the base agent for fair comparison.
-    - `deepmdp_agent.py`: The DeepMDP agent ([reference implementation](https://github.com/facebookresearch/deep_bisim4control/blob/main/agent/deepmdp_agent.py)).
-    - `bisim_agent_sac.py`: The [DBC](https://github.com/google-deepmind/dm_control) and [DBC-normed](https://github.com/metekemertas/RobustBisimulation) agents.
-    - `mico_agent_sac.py`: The [MICo](https://github.com/google-research/google-research/blob/bb19948d367f3337c16176232e86069bf36b0bf5/mico) and [SimSR](https://github.com/bit1029public/SimSR) agents.
-    - `rap_agent_sac.py`: The [RAP](https://github.com/jianda-chen/RAP_distance) agent.
-    - `isolated_metric_agent.py`: The agent for isolated metric evaluation (Sec. 4.4 and Sec. 5.3 in our paper).
-    - `distance_function.py`: The distance functions (d̂_R, d̂_T, and d_Ψ in Table 1) used in the agents.
-    - `encoder.py`: Encoder architecture used by all agents.
-    - `transition_model.py`: Probabilistic transition models used for modeling dynamics.
-    - `model.py`: Actor and critic network implementations.
+- [`agents/`](https://github.com/Rayluo-mila/understanding-metric-learning/tree/main/agents): Contains all agent implementations, including encoders, decoders, and other models.
+    - [`base_agent.py`](https://github.com/Rayluo-mila/understanding-metric-learning/blob/main/agents/base_agent.py): The base class for the agents, providing vanilla [Soft Actor-Critic](https://github.com/haarnoja/sac) algorithm as the base agent for fair comparison.
+    - [`deepmdp_agent.py`](https://github.com/Rayluo-mila/understanding-metric-learning/blob/main/agents/deepmdp_agent.py): The DeepMDP agent ([reference implementation](https://github.com/facebookresearch/deep_bisim4control/blob/main/agent/deepmdp_agent.py)).
+    - [`bisim_agent_sac.py`](https://github.com/Rayluo-mila/understanding-metric-learning/blob/main/agents/bisim_agent_sac.py): The [DBC](https://github.com/google-deepmind/dm_control) and [DBC-normed](https://github.com/metekemertas/RobustBisimulation) agents.
+    - [`mico_agent_sac.py`](https://github.com/Rayluo-mila/understanding-metric-learning/blob/main/agents/mico_agent_sac.py): The [MICo](https://github.com/google-research/google-research/blob/bb19948d367f3337c16176232e86069bf36b0bf5/mico) and [SimSR](https://github.com/bit1029public/SimSR) agents.
+    - [`rap_agent_sac.py`](https://github.com/Rayluo-mila/understanding-metric-learning/blob/main/agents/rap_agent_sac.py): The [RAP](https://github.com/jianda-chen/RAP_distance) agent.
+    - [`isolated_metric_agent.py`](https://github.com/Rayluo-mila/understanding-metric-learning/blob/main/agents/isolated_metric_agent.py): The agent for isolated metric evaluation (Sec. 4.4 and Sec. 5.3 in our paper).
+    - [`distance_function.py`](https://github.com/Rayluo-mila/understanding-metric-learning/blob/main/agents/distance_function.py): The distance functions (d̂_R, d̂_T, and d_Ψ in Table 1) used in the agents.
+    - [`encoder.py`](https://github.com/Rayluo-mila/understanding-metric-learning/blob/main/agents/encoder.py): Encoder architecture used by all agents.
+    - [`transition_model.py`](https://github.com/Rayluo-mila/understanding-metric-learning/blob/main/agents/transition_model.py): Probabilistic transition models used for modeling dynamics.
+    - [`model.py`](https://github.com/Rayluo-mila/understanding-metric-learning/blob/main/agents/model.py): Actor and critic network implementations.
 
-- `cfgs/`: Default hyperparameter configurations.
+- [`cfgs/`](https://github.com/Rayluo-mila/understanding-metric-learning/tree/main/cfgs): Default hyperparameter configurations.
 
-- `environments/`: Environment interfaces and wrappers built on [dm_control](https://github.com/google-deepmind/dm_control).
+- [`environments/`](https://github.com/Rayluo-mila/understanding-metric-learning/tree/main/environments): Environment interfaces and wrappers built on [dm_control](https://github.com/google-deepmind/dm_control).
 
-- `trainers/`: Training and evaluation loops for different domains.
+- [`trainers/`](https://github.com/Rayluo-mila/understanding-metric-learning/tree/main/trainers): Training and evaluation loops for different domains.
 
-- `utils/`: Utility functions (e.g., logging, seeding, and replay buffers).
+- [`utils/`](https://github.com/Rayluo-mila/understanding-metric-learning/tree/main/utils): Utility functions (e.g., logging, seeding, and replay buffers).
 
 
 ## ❓ Questions and Issues
