@@ -3,7 +3,11 @@
 "Understanding Behavioral Metric Learning in Deep RL: A Large-Scale Study on Distracting Environments", RLC 2025
 by [Ziyan "Ray" Luo](https://zyluo.netlify.app/), [Tianwei Ni](https://twni2016.github.io/), [Pierre-Luc Bacon](https://pierrelucbacon.com/), [Doina Precup](https://mila.quebec/en/directory/doina-precup), [Xujie Si](https://www.cs.toronto.edu/~six/)
 
-A framework that affords the comparison of *different behavioral metrics learning methods* in deep reinforcement learning.
+<p align="center">
+  <img src="environments/illustration.pdf" alt="Examples of background noise settings in pixel-based domains." width="500"/>
+</p>
+
+A modular framework that affords the comparison of *different behavioral metrics learning methods* in deep reinforcement learning.
 
 
 ## Installation
@@ -86,18 +90,23 @@ See `cfgs/agent_configs.yaml` for the list of available agents. Pass `agent.name
 - `agents/`: Contains the implementations of the agents, including encoders, decoders, and other models.
     - `base_agent.py`: The base class for the agents, providing vanilla [Soft Actor-Critic](https://github.com/haarnoja/sac) algorithm as the base agent for fair comparison.
     - `deepmdp_agent.py`: The DeepMDP agent ([reference implementation](https://github.com/facebookresearch/deep_bisim4control/blob/main/agent/deepmdp_agent.py)).
-    - `bisim_agent_sac.py`: The [DBC](https://github.com/google-deepmind/dm_control) and [DBC-normed](https://github.com/metekemertas/RobustBisimulation) agent.
-    - `mico_agent_sac.py`: The [MICo](https://github.com/google-research/google-research/blob/bb19948d367f3337c16176232e86069bf36b0bf5/mico) and [SimSR](https://github.com/bit1029public/SimSR) agent.
+    - `bisim_agent_sac.py`: The [DBC](https://github.com/google-deepmind/dm_control) and [DBC-normed](https://github.com/metekemertas/RobustBisimulation) agents.
+    - `mico_agent_sac.py`: The [MICo](https://github.com/google-research/google-research/blob/bb19948d367f3337c16176232e86069bf36b0bf5/mico) and [SimSR](https://github.com/bit1029public/SimSR) agents.
     - `rap_agent_sac.py`: The [RAP](https://github.com/jianda-chen/RAP_distance) agent.
     - `isolated_metric_agent.py`: The agent for isolated metric evaluation (Sec. 4.4 in our paper).
     - `distance_function.py`: The distance functions ($d_\mathcal{X}$, $d_R$ and $d_\Psi$) used in the agents.
     - `encoder.py`: The encoder used in the agents.
     - `transition_model.py`: The transition model used in the agents.
-    - `model.py`: The Actors and Critics used in the agents.
+    - `model.py`: The actors and critics used in the agents.
 - `cfgs/`: Contains the default hyperparameters for the experiments.
 - `environments/`: Contains the environments and their wrappers (based on [dm_control](https://github.com/google-deepmind/dm_control)).
 - `trainers/`: Contains the training and the evaluation loop for different domains.
 - `utils/`: Contains utility functions.
+
+
+## Questions and Issues
+If you have any questions or issues, please feel free to email us (ziyan.luo@mail.mcgill.ca, twni2016@gmail.com), or open an issue on GitHub. We glad to hear any form of feedback and will try our best to help you.
+
 
 ## References
 DeepMind Control Suite (DMC): [paper](https://arxiv.org/abs/1801.00690), [code](https://github.com/google-deepmind/dm_control)
