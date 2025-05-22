@@ -27,9 +27,10 @@ A modular framework that affords the comparison of *different behavioral metrics
 
 ## 🚀 To run the minimal experiments
 
-To run a minimal experiment (see **Hyperparameters** Section for details on configuring settings), you can use the following command:
+To run a minimal experiment (see Appendix F.1, **Hyperparameters** section for configuration details), use the following commands. They perform *ID and OOD generalization evaluations* concurrently.
 
 ### 🧪 State-based DMC (IID Gaussian Noise)
+
 ```
 python main.py \
         env=dmc_state \
@@ -44,6 +45,8 @@ python main.py \
 ```
 
 ### 🖼️ Pixel-based DMC (Natural Video Background)
+
+
 ```
 python main.py \
         env=dmc_pixel \
@@ -63,34 +66,73 @@ See `cfgs/agent_configs.yaml` for the list of available agents. Pass `agent.name
 
 ## 📊 Hyperparameters
 ### Explanation of Hyperparameters
-- Key hyperparameters to reproduce our results:
-    - `env`: The environment to run the experiments (`dmc_pixel` or `dmc_state`).
-    - `domain_name` and `task_name`: This pair defines the task name of the environment (See [DMC documentation](https://arxiv.org/abs/1801.00690) for available pairs).
-    - `agent.name`: The agent to use for the experiments, defined in `cfgs/agent_configs.yaml`. Isolated metric evaluation agents are also included.
-    - `action_repeat`: The number of times the action is repeated in DMC. Please set it for different tasks according to our paper, Appendix Sec. E to reproduce our result.
-    - `seed`: The random seed for reproducibility.
-    - `use_vectorized_training_env`: Whether to use vectorized training environments.
-    - `noise_source`: The type of noise setting.
-        - For state-based DMC, choose from `[noise, random_proj]`, which stands for IID Gaussian noise and IID Gaussian noise with random projection, respectively.
-        - For pixel-based DMC, choose from `[none, images_gray, images, video_gray, video, noise]`, which stands for clean background, natural images background (grayscale and colored), natural video background (grayscale and colored), and IID Gaussian noise (per-pixel), respectively.
-    - `noise_dim`: The dimension of the noise vector in state-based IID Gaussian noise (with / without random projection).
-    - `noise_std`: The standard deviation of the noise in state-based IID Gaussian noise (with / without random projection).
-    - `agent.encoder_post_processing`: In default, pixel-based settings use encoder with LayerNorm while state-based settings use an encoder without LayerNorm. Set to `no_layer_norm` for pixel-based environments, and `layer_norm` for state-based environments if you want to use the other setting.
-- See `cfgs/env/*.yaml` for the detailed list of hyperparameters and their explanations.
 
-### Priority of Different Sources of Hyperparameters
-- The default *high-level hyperparameters* are stored in `cfgs/config.yaml`.
-- The default *domain-specific hyperparameters* are stored in `cfgs/env/*.yaml`.
-- The default *agent-specific hyperparameters* are stored in `cfgs/agent_configs.yaml`.
-- The priority of hyperparameter overridings is as follows:
-    1. Agent-specific hyperparameters defined in `cfgs/agent_configs.yaml`.
-    2. Command line arguments. The command line arguments should be in the format of `key=value`. Note that these arguments do not override the agent-specific hyperparameters. If you want to DIY an agent, you should use one of the three base settings in `cfgs/agent_configs.yaml`.
-    3. Domain-specific hyperparameters in `cfgs/env/*.yaml`.
-    4. High-level hyperparameters specified by `cfgs/config.yaml`.
+- Key Hyperparameters for Reproducing Results:
+
+    - `env`: Specifies the environment type. Choose from:
+        - `dmc_pixel`: Pixel-based observations.
+        - `dmc_state`: Low-dimensional proprioceptive state inputs.
+
+    - `domain_name`, `task_name`: Define the task from the DeepMind Control Suite (DMC). See the [DMC paper](https://arxiv.org/abs/1801.00690) for available domain-task pairs.
+
+    - `agent.name`: Specifies the agent configuration defined in `cfgs/agent_configs.yaml`. Includes both standard agents and isolated metric evaluation variants.
+
+    - `action_repeat`: Number of times each action is repeated. Task-specific values are detailed in Appendix Sec. E of the paper.
+
+    - `seed`: Random seed for reproducibility.
+
+    - `use_vectorized_training_env`: Whether to use vectorized training environments (`true` or `false`).
+    
+    - `noise_source`: Specifies the noise type applied during training:
+        - **State-based DMC**:
+            - `noise`: IID Gaussian noise.
+            - `random_proj`: IID Gaussian noise followed by random projection.
+        - **Pixel-based DMC**:
+            - `none`: Clean background.
+            - `images_gray`, `images`: Natural image backgrounds (grayscale or RGB).
+            - `video_gray`, `video`: Natural video backgrounds (grayscale or RGB).
+            - `noise`: Per-pixel IID Gaussian noise.
+
+    - `noise_dim`: Dimensionality of the Gaussian noise vector (state-based only).
+    
+    - `noise_std`: Standard deviation of the Gaussian noise (state-based only).
+
+    - `agent.encoder_post_processing`: Controls the encoder normalization scheme:
+        - `layer_norm`: Applies LayerNorm after the encoder.
+        - `no_layer_norm`: No normalization is applied.
+        
+        **Defaults**:
+        - Pixel-based environments use `layer_norm` by default.
+        - State-based environments use `no_layer_norm` by default.
+        
+        You may override the default to study the effect of normalization on representation learning.
+
+
+> For full hyperparameter specifications and detailed explanations, see the YAML files in `cfgs/env/`.
+
+### Priority of Hyperparameter Sources
+
+Hyperparameters are defined across multiple configuration files, with the following priority (from highest to lowest):
+
+1. **Agent-specific settings** (`cfgs/agent_configs.yaml`):  
+   Highest priority. Used to define individual agent configurations. To customize an agent, modify or extend one of the base configurations in this file.
+
+2. **Command-line arguments** (`key=value` format):  
+   Override most settings *except* those in `agent_configs.yaml`. Note that these arguments do not override the agent-specific hyperparameters. For full agent customization, use `cfgs/agent_configs.yaml`.
+
+3. **Domain-specific settings** (`cfgs/env/*.yaml`):  
+   Provide domain-specific environmental settings.
+
+4. **High-level defaults** (`cfgs/config.yaml`):  
+   Global defaults for general experimental settings.
+
+Each source builds upon the lower-priority layers, allowing flexible but controlled overrides.
 
 ## 🗂️ Code Structure
-- `main.py`: The entry to run the experiments.
-- `agents/`: Contains the implementations of the agents, including encoders, decoders, and other models.
+
+- `main.py`: Entry point for running experiments.
+
+- `agents/`: Contains all agent implementations, including encoders, decoders, and other models.
     - `base_agent.py`: The base class for the agents, providing vanilla [Soft Actor-Critic](https://github.com/haarnoja/sac) algorithm as the base agent for fair comparison.
     - `deepmdp_agent.py`: The DeepMDP agent ([reference implementation](https://github.com/facebookresearch/deep_bisim4control/blob/main/agent/deepmdp_agent.py)).
     - `bisim_agent_sac.py`: The [DBC](https://github.com/google-deepmind/dm_control) and [DBC-normed](https://github.com/metekemertas/RobustBisimulation) agents.
@@ -98,13 +140,17 @@ See `cfgs/agent_configs.yaml` for the list of available agents. Pass `agent.name
     - `rap_agent_sac.py`: The [RAP](https://github.com/jianda-chen/RAP_distance) agent.
     - `isolated_metric_agent.py`: The agent for isolated metric evaluation (Sec. 4.4 and Sec. 5.3 in our paper).
     - `distance_function.py`: The distance functions (d̂_R, d̂_T, and d_Ψ in Table 1) used in the agents.
-    - `encoder.py`: The encoder used in the agents.
-    - `transition_model.py`: The transition model used in the agents.
-    - `model.py`: The actors and critics used in the agents.
-- `cfgs/`: Contains the default hyperparameters for the experiments.
-- `environments/`: Contains the environments and their wrappers (based on [dm_control](https://github.com/google-deepmind/dm_control)).
-- `trainers/`: Contains the training and the evaluation loop for different domains.
-- `utils/`: Contains utility functions.
+    - `encoder.py`: Encoder architecture used by all agents.
+    - `transition_model.py`: Probabilistic transition models used for modeling dynamics.
+    - `model.py`: Actor and critic network implementations.
+
+- `cfgs/`: Default hyperparameter configurations.
+
+- `environments/`: Environment interfaces and wrappers built on [dm_control](https://github.com/google-deepmind/dm_control).
+
+- `trainers/`: Training and evaluation loops for different domains.
+
+- `utils/`: Utility functions (e.g., logging, seeding, and replay buffers).
 
 
 ## ❓ Questions and Issues
