@@ -19,13 +19,11 @@ FORMAT_CONFIG = {
             ('transition_loss', 'TLOSS', 'float'), ('reward_loss', 'RLOSS', 'float'),
             ('mu_bd', 'MUBD', 'float'), ('mu_rd', 'MURD', 'float'), 
             ('mu_zd', 'MUZD', 'float'), ('mu_ratio', 'MUR', 'float'),
-            ('ir', 'IR', 'float'), ('latprior_loss', 'ILOSS', 'float'), ('norm', 'NORM', 'float')
+            ('norm', 'NORM', 'float')
         ],
         'eval': [
             ('step', 'S', 'int'), ('episode_reward', 'ER', 'float'), 
-            ('metric_discrepancy', 'MD', 'float'), ('duration', 'D', 'time'),
-            ('pi_pistar_distance', 'PPD', 'float'),
-            ('metric_hat_norm', 'MHN', 'float'), ('metric_exact_norm', 'MEN', 'float'),
+            ('duration', 'D', 'time'),
         ]
     }
 }
@@ -126,18 +124,6 @@ class Logger(object):
         if self._sw is not None:
             self._sw.add_scalar(key, value, step)
 
-    # def _try_sw_log_image(self, key, image, step):
-    #     if self._sw is not None:
-    #         assert image.dim() == 3
-    #         grid = torchvision.utils.make_grid(image.unsqueeze(1))
-    #         self._sw.add_image(key, grid, step)
-
-    # def _try_sw_log_video(self, key, frames, step):
-    #     if self._sw is not None:
-    #         frames = torch.from_numpy(np.array(frames))
-    #         frames = frames.unsqueeze(0)
-    #         self._sw.add_video(key, frames, step, fps=30)
-
     def _try_sw_log_histogram(self, key, histogram, step):
         if self._sw is not None:
             self._sw.add_histogram(key, histogram, step)
@@ -158,14 +144,6 @@ class Logger(object):
             self.log_histogram(key + '_b', param.bias.data, step)
             if hasattr(param.bias, 'grad') and param.bias.grad is not None:
                 self.log_histogram(key + '_b_g', param.bias.grad.data, step)
-
-    # def log_image(self, key, image, step):
-    #     assert key.startswith('train') or key.startswith('eval')
-    #     self._try_sw_log_image(key, image, step)
-
-    # def log_video(self, key, frames, step):
-    #     assert key.startswith('train') or key.startswith('eval')
-    #     self._try_sw_log_video(key, frames, step)
 
     def log_histogram(self, key, histogram, step):
         assert key.startswith('train') or key.startswith('eval')

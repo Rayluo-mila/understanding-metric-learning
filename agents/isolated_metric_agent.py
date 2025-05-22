@@ -186,12 +186,10 @@ class IsolatedMetricSACAgent(BisimAgent):
             encoder_parameters = [p for p in self.encoder_metric.parameters() if p.requires_grad]
             self.grad_norm_analysis(transition_reward_loss, encoder_parameters, step, label='transition_reward_loss')
 
-        # self.encoder_optimizer.zero_grad()
         self.decoder_optimizer.zero_grad()
         self.metric_optimizer.zero_grad()
         if transition_reward_loss != 0: transition_reward_loss.backward()
         if encoder_loss != 0: encoder_loss.backward()
-        # self.encoder_optimizer.step()
         self.decoder_optimizer.step()
         self.metric_optimizer.step()
 

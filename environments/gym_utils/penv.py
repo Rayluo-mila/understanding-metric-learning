@@ -196,12 +196,12 @@ class Config:
 
 
 def make_env(cfg, seed, bg_source='unspecified'):
-    img_source = cfg.img_source if bg_source == 'unspecified' else None
+    noise_source = cfg.noise_source if bg_source == 'unspecified' else None
     env = dmc2gym.make(
         domain_name=cfg.domain_name,
         task_name=cfg.task_name,
         resource_files=cfg.resource_files,
-        img_source=img_source,
+        noise_source=noise_source,
         total_frames=cfg.total_frames,
         seed=seed,
         visualize_reward=False,
@@ -211,7 +211,7 @@ def make_env(cfg, seed, bg_source='unspecified'):
         frame_skip=cfg.action_repeat,
     )
     if bg_source != 'unspecified':
-        env.unwrapped.set_bg_source(bg_source, cfg.img_source)
+        env.unwrapped.set_bg_source(bg_source, cfg.noise_source)
     env = FrameStack(env, k=cfg.frame_stack, stack_clean=False)
     return env
 
@@ -219,7 +219,7 @@ def make_env(cfg, seed, bg_source='unspecified'):
 def main():
     cfg_dict = {'domain_name': 'cheetah',
                 'task_name': 'run',
-                'img_source': 'video_gray',
+                'noise_source': 'video_gray',
                 'total_frames': 1000,
                 'action_repeat': 4,
                 'image_size': 84,

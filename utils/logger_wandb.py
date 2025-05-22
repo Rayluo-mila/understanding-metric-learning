@@ -23,9 +23,6 @@ FORMAT_CONFIG = {
             ('step', 'S', 'int'), ('episode_reward', 'ER', 'float'), ('debug_duration', 'D', 'time'),
             ('df_squashed_DF_L2', 'DFL2', 'float'), ('df_squashed_DF', 'DF', 'float'),
             ('df_pos_score_L2', 'POSL2', 'float'), ('df_neg_score_L2', 'NEGL2', 'float'),
-            # ('metric_discrepancy', 'MD', 'float'),
-            # ('pi_pistar_distance', 'PPD', 'float'),
-            # ('metric_hat_norm', 'MHN', 'float'), ('metric_exact_norm', 'MEN', 'float'),
         ]
     }
 }
@@ -105,7 +102,6 @@ class MetersGroup(object):
             self._count = 0
             data = self._prime_meters()
             data['step'] = step
-            # self._dump_to_file(data)
             self._dump_to_console(data, prefix)
             self._meters.clear()
 
@@ -157,7 +153,6 @@ class Logger(object):
         mg.log(key, value, n)
         if log_on_wandb:
             self._use_wandb_params.add(key)
-            # self._try_wandb_log(key, value / n, step)
 
     def log_param(self, key, param, step):
         self.log_histogram(key + '_w', param.weight.data, step)

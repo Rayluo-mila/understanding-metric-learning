@@ -2,8 +2,6 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import matplotlib.pyplot as plt
-from pathlib import Path
 
 import utils.rl_utils as rl_utils
 from agents.models import  Actor, Critic
@@ -49,14 +47,6 @@ class SACAgent(object):
         self.min_reward = cfg.min_reward
         self.metric_ub = cfg.c_R * (self.max_reward - self.min_reward) / (1 - cfg.c_T)
         self.encoder_max_norm, self.encoder_max_norm_ord = get_max_norm(self.metric_ub, cfg)
-
-        # For tracking
-        self.max_r_dist_l1 = 0
-        self.max_z_dist = 0
-        self.max_zprime_dist = 0
-        self.max_bd = 0
-        self.collected_r_dist = []
-        self.current_step = 0
 
         self.actor = Actor(
             obs_shape, action_shape, cfg.hidden_dim, cfg.encoder_type,
@@ -134,7 +124,7 @@ class SACAgent(object):
     def alpha(self):
         return self.log_alpha.exp()
 
-    def select_action(self, obs, multiproc=False, **kwargs):  # TODO: torch_mode
+    def select_action(self, obs, multiproc=False, **kwargs):
         with torch.no_grad():
             obs = torch.FloatTensor(obs).to(self.device)
             obs = obs.unsqueeze(0) if not multiproc else obs  # 4-dim: vectorized
@@ -269,36 +259,6 @@ class SACAgent(object):
     def reward_dist(self, reward, reward2, r_vars=None):
         r_dist = reward_dist(reward, reward2, self.cfg, r_vars)  # (batch_size)
         return r_dist
-
-    def collect_and_save_r_dist_plot(self, step, num_bins=20):
-        """Combine collected r_dist and save distribution plot."""
-        file_dir = Path(self.cfg.plot_r_dist_save_dir)
-        file_dir.mkdir(parents=True, exist_ok=True)
-        # Combine all batches into one tensor
-        collected_r_dist = torch.cat(self.collected_r_dist).cpu().numpy()
-        y_max = len(collected_r_dist)
-        collected_r_dist = collected_r_dist[collected_r_dist != 0]
-
-        # Create histogram bins
-        hist, bin_edges = np.histogram(collected_r_dist, bins=num_bins, range=(self.min_reward, self.max_reward))
-
-        # Plot the bar chart
-        plt.figure(figsize=(10, 6))
-        plt.bar(bin_edges[:-1], hist, width=(self.max_reward - self.min_reward) / num_bins, edgecolor='k', align='edge')
-        plt.title(f"Distribution of r_dist, step={step}")
-        plt.xlabel("r_dist values")
-        plt.ylabel("Frequency")
-        plt.xticks(bin_edges, rotation=45)
-        plt.grid(axis='y', linestyle='--', alpha=0.7)
-        plt.tight_layout()
-        plt.xlim(self.min_reward, self.max_reward)
-        plt.ylim(0, y_max)
-
-        # Save the plot with filename based on the total number of samples
-        filename = file_dir / f"st{step}_r_dist_distribution.png"
-        plt.savefig(filename)
-        print(f"Plot saved as {filename}")
-        plt.close()
 
     def metric_func(self, x, y, step=None):
         z_dist = metric_func(x, y, self.cfg, self.metric_ub, step, self.L)  # (batch_size)

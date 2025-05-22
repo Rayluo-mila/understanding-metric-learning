@@ -20,7 +20,7 @@ def make_env(cfg, seed, bg_source='unspecified', is_eval=True, proj_matrix=None,
         domain_name=cfg.domain_name,
         task_name=cfg.task_name,
         resource_files=cfg.eval_resource_files if is_eval else cfg.resource_files,
-        img_source='none',
+        noise_source='none',
         total_frames=cfg.eval_total_frames if is_eval else cfg.total_frames,
         seed=seed,
         visualize_reward=False,
@@ -30,11 +30,11 @@ def make_env(cfg, seed, bg_source='unspecified', is_eval=True, proj_matrix=None,
         frame_skip=cfg.action_repeat,
     )
     if bg_source != 'unspecified':
-        env_.unwrapped.set_bg_source(bg_source, cfg.img_source)
+        env_.unwrapped.set_bg_source(bg_source, cfg.noise_source)
     env_ = PhysicalStateWrapper(env_)
-    if cfg.img_source == 'noise':
+    if cfg.noise_source == 'noise':
         env_ = GaussianNoiseWrapper(env_, cfg.noise_dim, cfg.noise_std)
-    elif cfg.img_source == 'random_proj':
+    elif cfg.noise_source == 'random_proj':
         noise_mean = cfg.eval_noise_mean if is_eval else 0.0
         env_ = GaussianRandomProjectionWrapper(env_, cfg.noise_dim, cfg.noise_std, proj_matrix, inv_proj_matrix, noise_mean)
     return env_
@@ -55,7 +55,7 @@ class DMCStateTrainer(BaseTrainer):
         os.environ["MUJOCO_GL"] = cfg.MUJOCO_GL
         torch.backends.cuda.matmul.allow_tf32 = True
 
-        if cfg.img_source == 'random_proj':
+        if cfg.noise_source == 'random_proj':
             # To get the true_obs_dim, we need to create a dummy env
             dummy_env = make_env(cfg, seed=cfg.seed, is_eval=False)
             matrix_m = dummy_env.true_obs_dim + cfg.noise_dim
@@ -110,7 +110,7 @@ class DMCStateTrainer(BaseTrainer):
 
         # Print info
         print(f'Obs dim: {self.true_obs_dim}, Physical state dim: {self.physical_state_dim}')
-        print(f'Distractor: {cfg.img_source}, Noise dim: {cfg.noise_dim}, std: {cfg.noise_std}')
+        print(f'Distractor: {cfg.noise_source}, Noise dim: {cfg.noise_dim}, std: {cfg.noise_std}')
 
         # Create replay buffer
         self.replay_buffer = rl_utils.MemSaveReplayBuffer(
@@ -263,8 +263,8 @@ class DMCStateTrainer(BaseTrainer):
         self.terminate()
 
     def eval(self, embed_viz_dir=None):
-        eval_bism_states = self.cfg.eval_bism_states and self.cfg.img_source is not None and (
-            self.cfg.img_source in ['noise', 'color', 'random_proj'])
+        eval_bism_states = self.cfg.eval_bism_states and self.cfg.noise_source is not None and (
+            self.cfg.noise_source in ['noise', 'color', 'random_proj'])
 
         # Initialize lists for embedding visualization
         obses_for_emb = []
@@ -416,9 +416,9 @@ class DMCStateTrainer(BaseTrainer):
         return result
 
     def _get_clean_obs(self, obs):
-        if self.cfg.img_source == 'noise':
+        if self.cfg.noise_source == 'noise':
             return obs[:self.true_obs_dim]
-        elif self.cfg.img_source == 'random_proj':
+        elif self.cfg.noise_source == 'random_proj':
             inversed_obs = recover_obs(obs, self.inv_proj_matrix)
             clean_obs = inversed_obs[:self.true_obs_dim]
             return clean_obs
@@ -427,12 +427,12 @@ class DMCStateTrainer(BaseTrainer):
     def _add_noise_to_obs(self, clean_obs, is_ood=True):
         if self.cfg.noise_dim == 0:
             return clean_obs
-        if self.cfg.img_source == 'noise':
+        if self.cfg.noise_source == 'noise':
             if not is_ood:
                 noised_obs = append_white_noise(clean_obs, self.cfg.noise_dim, self.cfg.noise_std)
             else:
                 noised_obs = append_white_noise(clean_obs, self.cfg.noise_dim, self.cfg.noise_std, self.cfg.eval_noise_mean)
-        elif self.cfg.img_source == 'random_proj':
+        elif self.cfg.noise_source == 'random_proj':
             if not is_ood:
                 noised_obs = append_white_noise(clean_obs, self.cfg.noise_dim, self.cfg.noise_std)
             else:

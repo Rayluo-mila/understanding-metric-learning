@@ -66,13 +66,11 @@ class RAPAgent(BisimAgent):
 
         # Get next latent states
         with torch.no_grad():
-            # action, _, _, _ = self.actor(obs, compute_pi=False, compute_log_pi=False)
             if self.transition_model_type in ['', 'deterministic', 'ensemble_det']:
                 pred_z_prime_sigma = None
                 pred_z_prime_mu = self.transition_model.sample_prediction(torch.cat([z_target, action], dim=1))
             else:
                 pred_z_prime_mu, pred_z_prime_sigma = self.transition_model(torch.cat([z_target, action], dim=1))
-            # reward_on_policy = self.reward_decoder(pred_z_prime_mu)
 
         z, z2, reward, reward2, pred_z_prime_mu, pred_z_prime_mu2, pred_z_prime_sigma, pred_z_prime_sigma2 = self.generate_bisim_samples(
             z, z_target, reward, pred_z_prime_mu, pred_z_prime_sigma)
@@ -98,8 +96,6 @@ class RAPAgent(BisimAgent):
         else:
             transition_dist = self.prob_metric_func(
                 pred_z_prime_mu, pred_z_prime_mu2, pred_z_prime_sigma, pred_z_prime_sigma2)
-            # self.L.log('train_metric/z_prime_mu_l2norm', pred_z_prime_mu.norm(p=2, dim=-1).mean(), step)
-            # self.L.log('train_metric/z_prime_sigma_l2norm', pred_z_prime_sigma.norm(p=2, dim=-1).mean(), step)
 
         # Compute metric loss
         diff_square = (z_dist - self.cfg.c_T * transition_dist).pow(2.)

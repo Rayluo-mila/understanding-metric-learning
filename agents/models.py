@@ -68,8 +68,6 @@ class Actor(nn.Module):
     ):
         super().__init__()
 
-        # print('obs shape', obs_shape)
-
         self.encoder = make_encoder(
             encoder_type, obs_shape, encoder_feature_dim, num_layers,
             num_filters, stride,
@@ -106,7 +104,6 @@ class Actor(nn.Module):
             pi = mu + noise * std
         else:
             pi = None
-            entropy = None
 
         if compute_log_pi:
             log_pi = gaussian_logprob(noise, log_std)

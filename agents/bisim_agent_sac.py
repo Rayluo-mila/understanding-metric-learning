@@ -82,26 +82,6 @@ class BisimAgent(SACAgent):
             self.log('train_metric/mu_rd_div_bd', self.mu_rd / (self.mu_bd + 1e-9), step)
             self.log('train_metric/metric_loss', metric_loss, step)
 
-            if self.cfg.plot_r_dist_interval > 0 and step != self.current_step:
-                self.current_step = step  # make sure a timestep only make stat one time
-                self.collected_r_dist.append(r_dist)
-                if step % self.cfg.plot_r_dist_interval == 0:
-                    self.collect_and_save_r_dist_plot(step, num_bins=50)
-                    self.collected_r_dist = []
-
-            if r_dist_l1 is not None: self.max_r_dist_l1 = max(self.max_r_dist_l1, r_dist_l1.max().item())
-            if 'dbc' in self.cfg.name:
-                self.max_z_dist = max(self.max_z_dist, z_dist.max().item())
-                self.max_zprime_dist = max(self.max_zprime_dist, transition_dist.max().item())
-                self.max_bd = max(self.max_bd, bisimilarity.max().item())
-            # Log until an episode is done
-            if step % 1000 == 0:
-                if r_dist_l1 is not None: self.log('train_metric/max_r_dist', self.max_r_dist_l1, step)
-                if 'dbc' in self.cfg.name:
-                    self.log('train_metric/max_z_dist', self.max_z_dist, step)
-                    self.log('train_metric/max_zprime_dist', self.max_zprime_dist, step)
-                    self.log('train_metric/max_bd', self.max_bd, step)
-
     def generate_bisim_samples(self, z, z_target, reward, mu, sigma, r_var=None):
         """
         Generates pairs of embeddings, rewards, and next latents for metric learning.
@@ -209,7 +189,7 @@ class BisimAgent(SACAgent):
 
     def update_transition_reward_model(self, obs, action, next_obs, reward, step):
         """
-        Implementing (detachable) RP+ZP losses.
+        Implementing (detachable) RP + ZP losses.
         """
         transition_loss = 0.
         if self.cfg.zp:
@@ -274,15 +254,3 @@ class BisimAgent(SACAgent):
             self.update_actor_and_alpha(obs, step)
 
         self.soft_update_params(step)
-
-    def update_max_r_dist(self, reward):
-        """
-        For debugging, collect max_r_dist in exploration phase.
-        """
-        perm = np.random.permutation(reward.size(0))
-        reward2 = reward[perm]
-        if not hasattr(self, 'max_r_dist'):
-            self.max_r_dist = 0
-        else:
-            max_r_dist = torch.abs(reward - reward2).max().item()
-            self.max_r_dist = max(self.max_r_dist, max_r_dist)

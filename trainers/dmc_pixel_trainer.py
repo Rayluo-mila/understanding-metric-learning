@@ -18,12 +18,12 @@ from environments.gym_utils.penv import worker_shared_memory_no_truncation_reset
 
 
 def make_env(cfg, seed, bg_source='unspecified', is_eval=True):
-    img_source = cfg.img_source if bg_source == 'unspecified' else None
+    noise_source = cfg.noise_source if bg_source == 'unspecified' else None
     env_ = dmc2gym.make(
         domain_name=cfg.domain_name,
         task_name=cfg.task_name,
         resource_files=cfg.eval_resource_files if is_eval else cfg.resource_files,
-        img_source=img_source,
+        noise_source=noise_source,
         total_frames=cfg.eval_total_frames if is_eval else cfg.total_frames,
         seed=seed,
         visualize_reward=False,
@@ -33,7 +33,7 @@ def make_env(cfg, seed, bg_source='unspecified', is_eval=True):
         frame_skip=cfg.action_repeat,
     )
     if bg_source != 'unspecified':
-        env_.unwrapped.set_bg_source(bg_source, cfg.img_source)
+        env_.unwrapped.set_bg_source(bg_source, cfg.noise_source)
     stack_clean = True if is_eval else False
     env_ = FrameStack(env_, k=cfg.frame_stack, stack_clean=stack_clean)
     return env_
@@ -144,7 +144,7 @@ class DMCPixelTrainer(BaseTrainer):
         )
 
         # Print info
-        print(f'Distractor: {cfg.img_source}')
+        print(f'Distractor: {cfg.noise_source}')
         self.agent.print_model_stats()
 
         # Load encoder
@@ -270,9 +270,9 @@ class DMCPixelTrainer(BaseTrainer):
         self.terminate()
 
     def eval(self, embed_viz_dir=None):
-        eval_bism_states = self.cfg.eval_bism_states and self.cfg.img_source is not None and (
-            self.cfg.img_source in ['noise', 'color'] or self.cfg.img_source.startswith('video') or \
-            self.cfg.img_source.startswith('images'))
+        eval_bism_states = self.cfg.eval_bism_states and self.cfg.noise_source is not None and (
+            self.cfg.noise_source in ['noise', 'color'] or self.cfg.noise_source.startswith('video') or \
+            self.cfg.noise_source.startswith('images'))
 
         # Initialize lists for embedding visualization
         obses_for_emb = []

@@ -1,5 +1,10 @@
 # Understanding Behavioral Metric Learning in Deep RL: A Large-Scale Study on Distracting Environments
+
+"Understanding Behavioral Metric Learning in Deep RL: A Large-Scale Study on Distracting Environments", RLC 2025
+by [Ziyan "Ray" Luo](https://zyluo.netlify.app/), [Tianwei Ni](https://twni2016.github.io/), [Pierre-Luc Bacon](https://pierrelucbacon.com/), [Doina Precup](https://mila.quebec/en/directory/doina-precup), [Xujie Si](https://www.cs.toronto.edu/~six/)
+
 A framework that affords the comparison of *different behavioral metrics learning methods* in deep reinforcement learning.
+
 
 ## Installation
 - Python (3.7.0 or higher recommended, and [Anaconda](https://www.anaconda.com/) recommended to set up a new environment)
@@ -30,7 +35,7 @@ python main.py \
         seed=1 \
         noise_dim=32 \
         noise_std=8.0 \
-        img_source=noise \
+        noise_source=noise \
         use_vectorized_training_env=true
 ```
 
@@ -42,7 +47,7 @@ python main.py \
         task_name=run \
         agent.name=sac \
         seed=1 \
-        img_source=video \
+        noise_source=video \
         use_vectorized_training_env=true
 ```
 
@@ -58,7 +63,7 @@ See `cfgs/agent_configs.yaml` for the list of available agents. Pass `agent.name
     - `action_repeat`: The number of times the action is repeated in DMC. Please set it for different tasks according to our paper, Appendix Sec. E to reproduce our result.
     - `seed`: The random seed for reproducibility.
     - `use_vectorized_training_env`: Whether to use vectorized training environments.
-    - `img_source`: The type of noise setting.
+    - `noise_source`: The type of noise setting.
         - For state-based DMC, choose from `[noise, random_proj]`, which stands for IID Gaussian noise and IID Gaussian noise with random projection, respectively.
         - For pixel-based DMC, choose from `[none, images_gray, images, video_gray, video, noise]`, which stands for clean background, natural images background (grayscale and colored), natural video background (grayscale and colored), and IID Gaussian noise, respectively.
     - `noise_dim`: The dimension of the noise vector in state-based IID Gaussian noise (with / without random projection).

@@ -244,8 +244,6 @@ class BaseTrainer:
             'n': 0,
             'episode_reward': 0,
             'episode_reward_homogeneous': 0,
-            'log_div_DF_L2_OOD': 0,
-            'log_div_DF_L2_ID': 0,
             'squashed_DF_L2_OOD': 0,
             'squashed_DF_L2_ID': 0,
             }
@@ -369,9 +367,7 @@ class BaseTrainer:
                 self.perf_meter['n'] += 1
                 self.perf_meter['episode_reward'] += mean_eps_reward
                 if eval_encoder_result is not None:
-                    self.perf_meter['log_div_DF_L2_ID'] += eval_encoder_result['eval_df_id/log_div_DF_L2']
                     self.perf_meter['squashed_DF_L2_ID'] += eval_encoder_result['eval_df_id/squashed_DF_L2']
-                    self.perf_meter['log_div_DF_L2_OOD'] += eval_encoder_result['eval_df_ood/log_div_DF_L2']
                     self.perf_meter['squashed_DF_L2_OOD'] += eval_encoder_result['eval_df_ood/squashed_DF_L2']
                 if self.homo_eval_env: 
                     self.perf_meter['episode_reward_homogeneous'] += mean_eps_reward_homo
@@ -380,8 +376,6 @@ class BaseTrainer:
                             self.cfg.perf_report_end_step[self.tabular_result_reported]) // 2
                 self.log(f'eval/tab_episode_reward_{log_step}', self.perf_meter['episode_reward'] / self.perf_meter['n'])
                 if eval_encoder_result is not None:
-                    self.log(f'eval/tab_log_div_DF_L2_ID_{log_step}', self.perf_meter['log_div_DF_L2_ID'] / self.perf_meter['n'])
-                    self.log(f'eval/tab_log_div_DF_L2_OOD_{log_step}', self.perf_meter['log_div_DF_L2_OOD'] / self.perf_meter['n'])
                     self.log(f'eval/tab_squashed_DF_L2_ID_{log_step}', self.perf_meter['squashed_DF_L2_ID'] / self.perf_meter['n'])
                     self.log(f'eval/tab_squashed_DF_L2_OOD_{log_step}', self.perf_meter['squashed_DF_L2_OOD'] / self.perf_meter['n'])
                 if self.homo_eval_env: 
@@ -391,28 +385,16 @@ class BaseTrainer:
                 self.tabular_result_reported += 1
 
     def _log_eval_bism(self, pos_score_sum, neg_score_sum, pos_score_L2_sum, neg_score_L2_sum, n_batch, identifier=''):
-        pos_score_mean = pos_score_sum / n_batch
-        neg_score_mean = neg_score_sum / n_batch
         pos_score_L2_mean = pos_score_L2_sum / n_batch
         neg_score_L2_mean = neg_score_L2_sum / n_batch
         
-        n_div_p = safe_divide(neg_score_sum, pos_score_sum)
-        n_div_p_L2 = safe_divide(neg_score_L2_sum, pos_score_L2_sum)
-        squashed_DF = safe_divide(neg_score_sum - pos_score_sum, neg_score_sum + pos_score_sum, default=0.0)
         squashed_DF_L2 = safe_divide(neg_score_L2_sum - pos_score_L2_sum, neg_score_L2_sum + pos_score_L2_sum, default=0.0)
 
         prefix = f'eval_df{identifier}'
         result = {
-            f'{prefix}/div_DF': n_div_p,
-            f'{prefix}/log_div_DF': np.log(n_div_p).item(),
-            f'{prefix}/div_DF_L2': n_div_p_L2,
-            f'{prefix}/log_div_DF_L2': np.log(n_div_p_L2).item(),
-            f'{prefix}/pos_score': pos_score_mean,
-            f'{prefix}/neg_score': neg_score_mean,
             f'{prefix}/pos_score_L2': pos_score_L2_mean,
             f'{prefix}/neg_score_L2': neg_score_L2_mean,
-            f'{prefix}/squashed_DF': squashed_DF,
-            f'{prefix}/squashed_DF_L2': squashed_DF_L2
+            f'{prefix}/DF_L2': squashed_DF_L2
         }
         self.log_multi(result)
         return result

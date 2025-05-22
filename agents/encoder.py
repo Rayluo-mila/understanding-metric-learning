@@ -88,66 +88,6 @@ class BasePixelEncoder(nn.Module):
     def log(self, L, step, log_freq):
         pass
 
-class BasePixelEncoder(nn.Module):
-    """Base convolutional encoder for pixel observations."""
-    def __init__(self, obs_shape, feature_dim, num_layers=2, num_filters=32, stride=None, **kwargs):
-        super().__init__()
-
-        assert len(obs_shape) == 3
-
-        self.feature_dim = feature_dim
-        self.num_layers = num_layers
-
-        self.convs = nn.ModuleList(
-            [nn.Conv2d(obs_shape[0], num_filters, 3, stride=stride)]
-        )
-        for i in range(num_layers - 1):
-            self.convs.append(nn.Conv2d(num_filters, num_filters, 3, stride=1))
-
-        out_dim = self.compute_output_dim(obs_shape[1], obs_shape[2])
-        
-        self.fc = nn.Linear(num_filters * out_dim * out_dim, self.feature_dim)
-        self.ln = nn.LayerNorm(self.feature_dim)
-
-        self.max_norm = kwargs.get("max_norm")
-        self.max_norm_ord = kwargs.get("max_norm_ord")
-
-    def compute_output_dim(self, h, w):
-        for conv in self.convs:
-            kernel_size_h, kernel_size_w = conv.kernel_size
-            stride_h, stride_w = conv.stride
-
-            h = (h - kernel_size_h) // stride_h + 1  # ceil((h - kernel_size + 2 * padding) / stride)
-            w = (w - kernel_size_w) // stride_w + 1
-
-        return h  # Assuming h and w are equal after convolution
-
-    def reparameterize(self, mu, logstd):
-        std = torch.exp(logstd)
-        eps = torch.randn_like(std)
-        return mu + eps * std
-
-    def forward_conv(self, obs):
-        obs = obs / 255.
-        conv = torch.relu(self.convs[0](obs))
-
-        for i in range(1, self.num_layers):
-            conv = torch.relu(self.convs[i](conv))
-
-        h = conv.view(conv.size(0), -1)
-        return h
-
-    def forward(self, obs, detach=False):
-        raise NotImplementedError("This method should be implemented in the subclasses.")
-
-    def copy_conv_weights_from(self, source):
-        """Tie convolutional layers"""
-        for i in range(self.num_layers):
-            tie_weights(src=source.convs[i], trg=self.convs[i])
-
-    def log(self, L, step, log_freq):
-        pass
-
 
 class PixelEncoder(BasePixelEncoder):
     """Convolutional encoder of pixels observations with LayerNorm and optional max norm constraint."""
@@ -203,40 +143,6 @@ class PixelEncoderL2Normed(BasePixelEncoder):
 
         h_fc = self.fc(h)
         h_norm = F.normalize(h_fc, dim=1, p=2)
-
-        return h_norm
-
-
-class PixelEncoderRMSNormed(BasePixelEncoder):
-    """Convolutional encoder of pixels observations with RMS normalization."""
-    def __init__(self, obs_shape, feature_dim, num_layers=2, num_filters=32, stride=None, **kwargs):
-        super().__init__(obs_shape, feature_dim, num_layers, num_filters, stride, **kwargs)
-
-    def forward(self, obs, detach=False):
-        h = self.forward_conv(obs)
-
-        if detach:
-            h = h.detach()
-
-        h_fc = self.fc(h)
-        h_norm = F.normalize(h_fc, dim=1, p=2) * (h_fc.size(1) ** 0.5)
-
-        return h_norm
-
-
-class PixelEncoderAvgL1Normed(BasePixelEncoder):
-    """Convolutional encoder of pixels observations with RMS normalization."""
-    def __init__(self, obs_shape, feature_dim, num_layers=2, num_filters=32, stride=None, **kwargs):
-        super().__init__(obs_shape, feature_dim, num_layers, num_filters, stride, **kwargs)
-
-    def forward(self, obs, detach=False):
-        h = self.forward_conv(obs)
-
-        if detach:
-            h = h.detach()
-
-        h_fc = self.fc(h)
-        h_norm = AvgL1Norm(h_fc)
 
         return h_norm
 
@@ -381,16 +287,54 @@ class MLPEncoderL2Normed(nn.Module):
         pass
 
 
+class MLPEncoderL2NormedLayernormed(nn.Module):
+    def __init__(self, obs_shape, feature_dim, num_layers, num_filters, *args, **kwargs):
+        super().__init__()
+        assert len(obs_shape) == 1
+        obs_shape = obs_shape[0]
+        self.model = nn.Sequential(
+            nn.Linear(obs_shape, 256),
+            nn.LeakyReLU(),
+            nn.Linear(256, 256),
+            nn.LeakyReLU(),
+            nn.Linear(256, feature_dim)
+        )
+        self.feature_dim = feature_dim
+        self.ln = nn.LayerNorm(self.feature_dim)
+
+    def forward(self, obs, detach=False, normalize=True):
+        x = self.model(obs)
+        if normalize:
+            x = self.normalize(x)
+        if detach:
+            x = x.detach()
+        return x
+
+    def normalize(self, x):
+        x = F.normalize(x, dim=1, p=2)
+        x = self.ln(x)
+        return x
+
+    def copy_conv_weights_from(self, source):
+        source_layers = [m for m in source.modules() if isinstance(m, nn.Linear)]
+        self_layers = [m for m in self.modules() if isinstance(m, nn.Linear)]
+        assert (len(self_layers) == len(source_layers))
+        for self_layer, source_layer in zip(self_layers, source_layers):
+            tie_weights(src=source_layer, trg=self_layer)
+
+    def log(self, L, step, log_freq):
+        pass
+
+
 _AVAILABLE_ENCODERS = {'pixel': PixelEncoder,
                        'pixel_nolayernormed': PixelEncoderNoLayerNorm,
                        'pixel_layernormed': PixelEncoder,
                        'pixel_l2normed': PixelEncoderL2Normed,
-                       'pixel_avg_l1normed': PixelEncoderAvgL1Normed,
-                       'pixel_rmsnormed': PixelEncoderRMSNormed,
                        'identity': IdentityEncoder,
                        'mlp': MLPEncoder,
                        'mlp_layernormed': MLPEncoderLayerNormed,
                        'mlp_l2normed': MLPEncoderL2Normed,
+                       'mlp_l2normed_layernormed': MLPEncoderL2NormedLayernormed,
                        }
 
 

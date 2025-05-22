@@ -1,4 +1,3 @@
-import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -69,7 +68,7 @@ class DeepMDPAgent(SACAgent):
 
     def update_transition_reward_model(self, obs, action, next_obs, reward, step):
         """
-        Implementing RP+ZP losses.
+        Implementing RP + ZP losses.
         """
         h = self.critic.encoder(obs)
         transition_loss = 0

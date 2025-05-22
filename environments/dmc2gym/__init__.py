@@ -6,7 +6,7 @@ def make(
     domain_name,
     task_name,
     resource_files,
-    img_source,
+    noise_source,
     total_frames,
     seed=1,
     visualize_reward=True,
@@ -30,7 +30,7 @@ def make(
         domain_name=domain_name,
         task_name=task_name,
         resource_files=resource_files,
-        img_source=img_source,
+        noise_source=noise_source,
         total_frames=total_frames,
         task_kwargs={
             'random': seed

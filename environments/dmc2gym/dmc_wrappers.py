@@ -66,7 +66,7 @@ def add_noise(obs, loc=None, bg_source=None):
 
 
 class DMCWrapper(Env):
-    def __init__(self, domain_name, task_name, resource_files, img_source, total_frames,
+    def __init__(self, domain_name, task_name, resource_files, noise_source, total_frames,
                  task_kwargs=None, visualize_reward={}, from_pixels=False, height=84,
                  width=84, camera_id=0, frame_skip=1, environment_kwargs=None):
         assert 'random' in task_kwargs, 'Please specify a seed for deterministic behavior'
@@ -77,7 +77,7 @@ class DMCWrapper(Env):
         self._frame_skip = frame_skip
         seed = task_kwargs.get('random', 1)
 
-        self._initialize_img_source(img_source, resource_files, total_frames)
+        self._initialize_noise_source(noise_source, resource_files, total_frames)
 
         # Create task
         if (domain_name, task_name) in suite.ALL_TASKS:
@@ -99,31 +99,31 @@ class DMCWrapper(Env):
         # Set seed
         self._seed(seed=seed)
 
-    def _initialize_img_source(self, img_source, resource_files, total_frames):
-        self._img_source = None if img_source == 'none' else img_source
-        if self._img_source is None:
+    def _initialize_noise_source(self, noise_source, resource_files, total_frames):
+        self._noise_source = None if noise_source == 'none' else noise_source
+        if self._noise_source is None:
             self._bg_source = None
             return
 
-        grayscale = 'gray' in img_source
-        random_frame = 'random' in img_source
+        grayscale = 'gray' in noise_source
+        random_frame = 'random' in noise_source
         shape2d = (self._height, self._width)
 
-        if img_source == "color":
+        if noise_source == "color":
             self._bg_source = natural_imgsource.RandomColorSource(shape2d)
-        elif img_source == "noise":
+        elif noise_source == "noise":
             self._bg_source = natural_imgsource.NoiseSource(shape2d)
-        elif "images" in img_source:
+        elif "images" in noise_source:
             files = glob.glob(os.path.expanduser(resource_files))
             assert files, f"Pattern {resource_files} does not match any files"
             # self._bg_source = natural_imgsource.RandomImageSource(shape2d, files, grayscale=grayscale, total_frames=total_frames)
             self._bg_source = natural_imgsource.RandomVideoSourceBgFixed(shape2d, files, grayscale=grayscale, total_frames=total_frames)
-        elif "video" in img_source:
+        elif "video" in noise_source:
             files = glob.glob(os.path.expanduser(resource_files))
             assert files, f"Pattern {resource_files} does not match any files"
             self._bg_source = natural_imgsource.RandomVideoSource(shape2d, files, grayscale=grayscale, random_frame=random_frame, total_frames=total_frames)
         else:
-            raise ValueError(f"img_source {img_source} not defined.")
+            raise ValueError(f"noise_source {noise_source} not defined.")
 
     def _define_spaces(self, from_pixels):
         self._true_action_space = _spec_to_box([self._env.action_spec()])
@@ -170,7 +170,7 @@ class DMCWrapper(Env):
         info = {'internal_state': self.get_physical_state()}
         info['discount'] = time_step.discount
         info['clean_obs'] = clean_obs
-        if self.img_source is not None and (self.img_source.startswith('video') or self.img_source.startswith('images')):
+        if self.noise_source is not None and (self.noise_source.startswith('video') or self.noise_source.startswith('images')):
             info['noise_vid_loc'] = self._bg_source.loc
         return info
 
@@ -200,9 +200,9 @@ class DMCWrapper(Env):
         return self._norm_action_space
     
     @property
-    def img_source(self):
-        if self._img_source == 'none': return None
-        return self._img_source
+    def noise_source(self):
+        if self._noise_source == 'none': return None
+        return self._noise_source
 
     def _seed(self, seed):
         self._true_action_space.seed(seed)
@@ -248,10 +248,10 @@ class DMCWrapper(Env):
         if self._bg_source is not None:
             self._bg_source.reset()
 
-    def set_bg_source(self, bg_source='unspecified', img_source='unspecified'):
+    def set_bg_source(self, bg_source='unspecified', noise_source='unspecified'):
         if bg_source != 'unspecified':
             self._bg_source = bg_source
-            self._img_source = img_source
+            self._noise_source = noise_source
 
     def render(self, mode='rgb_array', height=None, width=None, camera_id=0):
         assert mode == 'rgb_array', 'only support rgb_array mode, given %s' % mode

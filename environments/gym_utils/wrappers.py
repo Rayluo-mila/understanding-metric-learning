@@ -1,111 +1,8 @@
 import numpy as np
 
 from gymnasium import Wrapper, spaces
-import gym
-from skimage.transform import resize
 from collections import deque
 from environments.gym_utils.noise_utils import random_proj, append_white_noise
-
-
-class RewardActionWrapper(Wrapper):
-    """
-    Reduce action space, fix the reward non-Markovian issue, and no truncation
-    """
-    def __init__(self, env, n_actions=3):
-        super(RewardActionWrapper, self).__init__(env)
-        self.action_space = spaces.Discrete(n_actions)
-
-    def reset(self, **kwargs):
-        obs, info = self.env.reset(**kwargs)
-        return obs, info
-
-    def step(self, action):
-        obs, reward, terminated, truncated, info = self.env.step(action)
-        if terminated:
-            reward = 1
-        terminated = truncated or terminated
-        truncated = 0
-        return obs, reward, terminated, truncated, info
-    
-
-class TransposeWrapper(Wrapper):
-    def __init__(self, env):
-        super(TransposeWrapper, self).__init__(env)
-        self.height = env.observation_space.shape[0]
-        self.width = env.observation_space.shape[1]
-        self.observation_space = spaces.Box(low=0, high=255, shape=[3, self.height, self.width], dtype=np.uint8)
-        self._max_episode_steps = env.spec.max_episode_steps
-
-    def reset(self, **kwargs):
-        obs, info = self.env.reset(**kwargs)
-        obs = self._preprocess_obs(obs)
-        return obs, info
-
-    def step(self, action):
-        obs, reward, terminated, truncated, info = self.env.step(action)
-        obs = self._preprocess_obs(obs)
-        return obs, reward, terminated, truncated, info
-
-    def _preprocess_obs(self, obs):
-        # obs = resize(obs, (self.height, self.width)) * 255
-        obs = np.transpose(obs, [2, 0, 1])
-        return obs
-
-
-class RGBArrayAsObservationWrapper(Wrapper):
-    def __init__(self, env, height=84, width=84):
-        super(RGBArrayAsObservationWrapper, self).__init__(env)
-        self.height = height
-        self.width = width
-        self.observation_space = spaces.Box(low=0, high=255, shape=[3, height, width], dtype=np.uint8)
-        self._max_episode_steps = env.spec.max_episode_steps
-
-    def reset(self, **kwargs):
-        obs, info = self.env.reset()
-        if len(obs.shape) != 3:
-            obs = self.env.render(mode="rgb_array")
-            obs = self._preprocess_obs(obs)
-        return obs, info
-
-    def step(self, action):
-        obs, reward, terminated, truncated, info = self.env.step(action)
-        if len(obs.shape) != 3:
-            obs = self.env.render(mode="rgb_array")
-            obs = self._preprocess_obs(obs)
-        return obs, reward, terminated, truncated, info
-
-    def _preprocess_obs(self, obs):
-        obs = resize(obs, (self.height, self.width)) * 255
-        obs = np.transpose(obs, [2, 0, 1])
-        return obs
-    
-
-class RGBArrayAsObservationWrapperGym(gym.Wrapper):
-    def __init__(self, env, height=84, width=84):
-        super(RGBArrayAsObservationWrapperGym, self).__init__(env)
-        self.height = height
-        self.width = width
-        self.observation_space = gym.spaces.Box(low=0, high=255, shape=[3, height, width], dtype=np.uint8)
-        self._max_episode_steps = env.spec.max_episode_steps
-
-    def reset(self, **kwargs):
-        obs = self.env.reset()
-        if len(obs.shape) != 3:
-            obs = self.env.render(mode="rgb_array")
-            obs = self._preprocess_obs(obs)
-        return obs
-
-    def step(self, action):
-        obs, reward, done, info = self.env.step(action)
-        if len(obs.shape) != 3:
-            obs = self.env.render(mode="rgb_array")
-            obs = self._preprocess_obs(obs)
-        return obs, reward, done, info
-
-    def _preprocess_obs(self, obs):
-        obs = resize(obs, (self.height, self.width)) * 255
-        obs = np.transpose(obs, [2, 0, 1])
-        return obs
 
 
 class FrameStack(Wrapper):
@@ -114,9 +11,9 @@ class FrameStack(Wrapper):
         self._k = k
         self._frames = deque([], maxlen=k)
         self._store_clean_frames = False
-        if stack_clean and env.unwrapped.img_source is not None and (
-            env.unwrapped.img_source in ['noise', 'color'] or \
-            env.unwrapped.img_source.startswith('video') or env.unwrapped.img_source.startswith('images')):
+        if stack_clean and env.unwrapped.noise_source is not None and (
+            env.unwrapped.noise_source in ['noise', 'color'] or \
+            env.unwrapped.noise_source.startswith('video') or env.unwrapped.noise_source.startswith('images')):
             self._store_clean_frames = True
             self._clean_frames = deque([], maxlen=k)
         shp = env.observation_space.shape

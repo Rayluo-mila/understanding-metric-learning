@@ -9,7 +9,7 @@ action_repeat: 8
 frame_stack: 3
 resource_files: environments/dmc2gym/res/train_video/*.mp4
 eval_resource_files: environments/dmc2gym/res/eval_video/*.mp4
-img_source: none  # Choices: ['color', 'noise', 'images', 'video', 'video_gray', 'video_random', 'none']
+noise_source: none  # Choices: ['color', 'noise', 'images', 'video', 'video_gray', 'video_random', 'none']
 total_frames: 1000  # Total extracted frames from the video to form the distracting bg
 eval_total_frames: 1000
 MUJOCO_GL: egl  # Choices: ['egl', 'glfw', 'osmesa']
@@ -21,9 +21,8 @@ training_env_homogeneous_level: 1
 # 1: Uniform noise sources across all parallel environments
 # 2: Synchronized noise backgrounds for all parallel environments
 num_parallel_envs: 10  # use 5, 10, ... that are divisible into episode_step to prevent errors
-enforce_same_states: false
-# Same physics, and same action (the first env's action) for each env, only different in bg noise
-save_bg_debug: false
+enforce_same_states: false  # Same physics, and same action (the first env's action) for each env, only different in bg noise
+save_bg_debug: false  # output DMC images for debugging
 save_bg_dir: experiments/obs
 
 # Training
@@ -97,9 +96,6 @@ agent:
   state_reward_decoder_loss_coef: 0.5  # For RAP state reward decoder
   state_rp_detach_encoder: false  # For RAP state reward decoder
   report_grad_norm: false
-
-  plot_r_dist_interval: 0  # 0: disable
-  plot_r_dist_save_dir: experiments/r_dist
 
   # isolated metric agent settings
   encoder_max_norm_metric: false
