@@ -292,8 +292,8 @@ class BaseTrainer:
             "n": 0,
             "episode_reward": 0,
             "episode_reward_homogeneous": 0,
-            "squashed_DF_L2_OOD": 0,
-            "squashed_DF_L2_ID": 0,
+            "DF_L2_OOD": 0,
+            "DF_L2_ID": 0,
         }
 
         self._global_step = 0
@@ -371,7 +371,6 @@ class BaseTrainer:
         For each anchor, with batch_size_pos pos samples (N'(s)), i.e., batch_size_pos differently noised obses for each anchor.
         For each anchor, with batch_size_neg neg samples (N''(bar_s)), i.e., batch_size_neg obses from different states.
         """
-        batch_size_anchor = len(anchor)
         batch_size_pos = len(pos_samples[0])
         batch_size_neg = len(neg_samples[0])
 
@@ -441,11 +440,11 @@ class BaseTrainer:
                 self.perf_meter["n"] += 1
                 self.perf_meter["episode_reward"] += mean_eps_reward
                 if eval_encoder_result is not None:
-                    self.perf_meter["squashed_DF_L2_ID"] += eval_encoder_result[
-                        "eval_df_id/squashed_DF_L2"
+                    self.perf_meter["DF_L2_ID"] += eval_encoder_result[
+                        "eval_df_id/DF_L2"
                     ]
-                    self.perf_meter["squashed_DF_L2_OOD"] += eval_encoder_result[
-                        "eval_df_ood/squashed_DF_L2"
+                    self.perf_meter["DF_L2_OOD"] += eval_encoder_result[
+                        "eval_df_ood/DF_L2"
                     ]
                 if self.homo_eval_env:
                     self.perf_meter[
@@ -465,12 +464,12 @@ class BaseTrainer:
                 )
                 if eval_encoder_result is not None:
                     self.log(
-                        f"eval/tab_squashed_DF_L2_ID_{log_step}",
-                        self.perf_meter["squashed_DF_L2_ID"] / self.perf_meter["n"],
+                        f"eval/tab_DF_L2_ID_{log_step}",
+                        self.perf_meter["DF_L2_ID"] / self.perf_meter["n"],
                     )
                     self.log(
-                        f"eval/tab_squashed_DF_L2_OOD_{log_step}",
-                        self.perf_meter["squashed_DF_L2_OOD"] / self.perf_meter["n"],
+                        f"eval/tab_DF_L2_OOD_{log_step}",
+                        self.perf_meter["DF_L2_OOD"] / self.perf_meter["n"],
                     )
                 if self.homo_eval_env:
                     self.log(
@@ -493,7 +492,7 @@ class BaseTrainer:
         pos_score_L2_mean = pos_score_L2_sum / n_batch
         neg_score_L2_mean = neg_score_L2_sum / n_batch
 
-        squashed_DF_L2 = safe_divide(
+        DF_L2 = safe_divide(
             neg_score_L2_sum - pos_score_L2_sum,
             neg_score_L2_sum + pos_score_L2_sum,
             default=0.0,
@@ -503,7 +502,7 @@ class BaseTrainer:
         result = {
             f"{prefix}/pos_score_L2": pos_score_L2_mean,
             f"{prefix}/neg_score_L2": neg_score_L2_mean,
-            f"{prefix}/DF_L2": squashed_DF_L2,
+            f"{prefix}/DF_L2": DF_L2,
         }
         self.log_multi(result)
         return result

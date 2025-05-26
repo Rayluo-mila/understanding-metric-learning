@@ -1,7 +1,14 @@
 # Understanding Behavioral Metric Learning in Deep RL: A Large-Scale Study on Distracting Environments
 
 📄 "Understanding Behavioral Metric Learning in Deep RL: A Large-Scale Study on Distracting Environments", [Reinforcement Learning Conference (RLC)](https://rl-conference.cc/) 2025
-by [Ziyan "Ray" Luo](https://zyluo.netlify.app/), [Tianwei Ni](https://twni2016.github.io/), [Pierre-Luc Bacon](https://pierrelucbacon.com/), [Doina Precup](https://mila.quebec/en/directory/doina-precup), [Xujie Si](https://www.cs.toronto.edu/~six/)
+by [Ziyan "Ray" Luo](https://zyluo.netlify.app/)¹², [Tianwei Ni](https://twni2016.github.io/)¹³, [Pierre-Luc Bacon](https://pierrelucbacon.com/)¹³⁵, [Doina Precup](https://mila.quebec/en/directory/doina-precup)¹²⁵, [Xujie Si](https://www.cs.toronto.edu/~six/)¹⁴⁵
+
+1. [Mila - Quebec Artificial Intelligence Institute](https://mila.quebec/), Montreal, Canada
+2. [McGill University](https://www.mcgill.ca/), Montreal, Canada
+3. [Université de Montréal](https://www.umontreal.ca/), Montréal, Canada
+4. [University of Toronto](https://www.utoronto.ca/), Toronto, Canada
+5. [Canada CIFAR AI Chair](https://www.cifar.ca/), Toronto, Canada
+
 
 <p align="center">
   <img src="environments/noise_illustration.png" alt="Examples of background noise settings in pixel-based domains." width="800"/>
