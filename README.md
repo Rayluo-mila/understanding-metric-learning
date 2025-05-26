@@ -7,7 +7,7 @@ by [Ziyan "Ray" Luo](https://zyluo.netlify.app/)¹², [Tianwei Ni](https://twni2
 2. [McGill University](https://www.mcgill.ca/), Montreal, Canada
 3. [Université de Montréal](https://www.umontreal.ca/), Montréal, Canada
 4. [University of Toronto](https://www.utoronto.ca/), Toronto, Canada
-5. [Canada CIFAR AI Chair](https://www.cifar.ca/), Toronto, Canada
+5. [Canada CIFAR AI Chair](https://www.cifar.ca/)
 
 
 <p align="center">
@@ -100,6 +100,17 @@ See [`cfgs/README.md`](https://github.com/Rayluo-mila/understanding-metric-learn
 - [`utils/`](https://github.com/Rayluo-mila/understanding-metric-learning/tree/main/utils): Utility functions (e.g., logging, seeding, and replay buffers).
 
 
+## 🔧 Steps to DIY your own (metric-based) agents
+
+- Create a new agent by inheriting from the `BaseAgent` class in [`agents/base_agent.py`](https://github.com/Rayluo-mila/understanding-metric-learning/blob/main/agents/base_agent.py). You can refer to the existing agents for examples.
+
+- Defining the distance functions in the [`distance_function.py`](https://github.com/Rayluo-mila/understanding-metric-learning/blob/main/agents/distance_function.py) file.
+
+- Add an entry in the [`cfgs/agent_configs.yaml`](https://github.com/Rayluo-mila/understanding-metric-learning/blob/main/cfgs/agent_configs.yaml) file.
+
+- Run the experiment with the new agent by passing the agent name to the [`main.py`](https://github.com/Rayluo-mila/understanding-metric-learning/blob/main/main.py) script.
+
+
 ## ❓ Questions and Issues
 If you have any questions or issues, please feel free to email us (ziyan.luo@mail.mcgill.ca, twni2016@gmail.com), or open an issue on GitHub. We glad to hear any form of feedback, and will try our best to help you.
 
@@ -113,7 +124,7 @@ If you have any questions or issues, please feel free to email us (ziyan.luo@mai
   [📄 Paper](https://arxiv.org/abs/1910.01741) | [💻 Code](https://github.com/denisyarats/pytorch_sac_ae)
 
 - **DeepMDP**  
-  [📄 Paper](https://proceedings.mlr.press/v97/gelada19a.html)
+  [📄 Paper](https://proceedings.mlr.press/v97/gelada19a.html) | [💻 Code (provided by DBC authors)](https://github.com/facebookresearch/deep_bisim4control/blob/main/agent/deepmdp_agent.py)
 
 - **Deep Bisimulation Control (DBC)**  
   [📄 Paper](https://arxiv.org/abs/2006.10742) | [💻 Code](https://github.com/facebookresearch/deep_bisim4control)
