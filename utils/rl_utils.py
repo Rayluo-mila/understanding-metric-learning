@@ -5,19 +5,18 @@ import random
 
 
 def count_parameters(model, recurse=True):
-    if model is None: return 0
+    if model is None:
+        return 0
     return sum(p.numel() for p in model.parameters(recurse=recurse) if p.requires_grad)
 
 
 def soft_update_params(net, target_net, tau):
     for param, target_param in zip(net.parameters(), target_net.parameters()):
-        target_param.data.copy_(
-            tau * param.data + (1 - tau) * target_param.data
-        )
+        target_param.data.copy_(tau * param.data + (1 - tau) * target_param.data)
 
 
 def set_seed_everywhere(seed):
-    os.environ['PYTHONHASHSEED'] = str(seed)
+    os.environ["PYTHONHASHSEED"] = str(seed)
     torch.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
     np.random.seed(seed)
@@ -46,7 +45,7 @@ def preprocess_obs(obs, bits=5):
     bins = 2**bits
     assert obs.dtype == torch.float32
     if bits < 8:
-        obs = torch.floor(obs / 2**(8 - bits))
+        obs = torch.floor(obs / 2 ** (8 - bits))
     obs = obs / bins
     obs = obs + torch.rand_like(obs) / bins
     obs = obs - 0.5
@@ -71,8 +70,11 @@ class eval_mode(object):
 
 class ReplayBuffer(object):
     """Buffer to store environment transitions."""
+
     def __init__(self, obs_shape, action_shape, capacity, batch_size, device, nprocs=1):
-        print(f'Building replay buffer with capacity={capacity}, B={batch_size}, obs={obs_shape}')
+        print(
+            f"Building replay buffer with capacity={capacity}, B={batch_size}, obs={obs_shape}"
+        )
         self.capacity = capacity
         self.batch_size = batch_size
         self.device = device
@@ -90,18 +92,22 @@ class ReplayBuffer(object):
         self.not_dones = np.empty((capacity, 1), dtype=np.float32)
 
         # compute memory needed
-        obs_elements = np.prod((capacity, *obs_shape))  # Total number of elements in the array
+        obs_elements = np.prod(
+            (capacity, *obs_shape)
+        )  # Total number of elements in the array
         action_elements = np.prod((capacity, *action_shape))
         reward_elements = np.prod((capacity, 1))
-        obs_memory = obs_elements * self.obses.itemsize / (1024 ** 3)
-        action_memory = action_elements * self.actions.itemsize / (1024 ** 3)
-        reward_memory = reward_elements * self.rewards.itemsize / (1024 ** 3)
-        print(f'Mem: obses need {obs_memory:.2f} GB, action need {action_memory:.2f} GB, reward need {reward_memory:.2f} GB')
+        obs_memory = obs_elements * self.obses.itemsize / (1024**3)
+        action_memory = action_elements * self.actions.itemsize / (1024**3)
+        reward_memory = reward_elements * self.rewards.itemsize / (1024**3)
+        print(
+            f"Mem: obses need {obs_memory:.2f} GB, action need {action_memory:.2f} GB, reward need {reward_memory:.2f} GB"
+        )
 
         self.idx = 0
         self.last_save = 0
         self.full = False
-    
+
     def add(self, obs, action, curr_reward, reward, next_obs, done):
         if self.nprocs == 1:
             self.add_single(obs, action, curr_reward, reward, next_obs, done)
@@ -125,12 +131,23 @@ class ReplayBuffer(object):
         num_to_add = min(self.nprocs, available_space)
 
         # Add elements that fit within the current capacity
-        np.copyto(self.obses[self.idx:self.idx + num_to_add], obs[:num_to_add])
-        np.copyto(self.actions[self.idx:self.idx + num_to_add], action[:num_to_add])
-        np.copyto(self.curr_rewards[self.idx:self.idx + num_to_add], np.expand_dims(curr_reward[:num_to_add], axis=-1))
-        np.copyto(self.rewards[self.idx:self.idx + num_to_add], np.expand_dims(reward[:num_to_add], axis=-1))
-        np.copyto(self.next_obses[self.idx:self.idx + num_to_add], next_obs[:num_to_add])
-        np.copyto(self.not_dones[self.idx:self.idx + num_to_add], np.expand_dims([not _ for _ in done[:num_to_add]], axis=-1))
+        np.copyto(self.obses[self.idx : self.idx + num_to_add], obs[:num_to_add])
+        np.copyto(self.actions[self.idx : self.idx + num_to_add], action[:num_to_add])
+        np.copyto(
+            self.curr_rewards[self.idx : self.idx + num_to_add],
+            np.expand_dims(curr_reward[:num_to_add], axis=-1),
+        )
+        np.copyto(
+            self.rewards[self.idx : self.idx + num_to_add],
+            np.expand_dims(reward[:num_to_add], axis=-1),
+        )
+        np.copyto(
+            self.next_obses[self.idx : self.idx + num_to_add], next_obs[:num_to_add]
+        )
+        np.copyto(
+            self.not_dones[self.idx : self.idx + num_to_add],
+            np.expand_dims([not _ for _ in done[:num_to_add]], axis=-1),
+        )
 
         # Update index and handle overflow
         self.idx = (self.idx + num_to_add) % self.capacity
@@ -139,12 +156,30 @@ class ReplayBuffer(object):
         # Handle overflow by wrapping around and adding remaining elements
         if num_to_add < self.nprocs:
             remaining = self.nprocs - num_to_add
-            np.copyto(self.obses[:remaining], obs[num_to_add:num_to_add + remaining])
-            np.copyto(self.actions[:remaining], action[num_to_add:num_to_add + remaining])
-            np.copyto(self.curr_rewards[:remaining], np.expand_dims(curr_reward[num_to_add:num_to_add + remaining], axis=-1))
-            np.copyto(self.rewards[:remaining], np.expand_dims(reward[num_to_add:num_to_add + remaining], axis=-1))
-            np.copyto(self.next_obses[:remaining], next_obs[num_to_add:num_to_add + remaining])
-            np.copyto(self.not_dones[:remaining], np.expand_dims([not _ for _ in done[num_to_add:num_to_add + remaining]], axis=-1))
+            np.copyto(self.obses[:remaining], obs[num_to_add : num_to_add + remaining])
+            np.copyto(
+                self.actions[:remaining], action[num_to_add : num_to_add + remaining]
+            )
+            np.copyto(
+                self.curr_rewards[:remaining],
+                np.expand_dims(
+                    curr_reward[num_to_add : num_to_add + remaining], axis=-1
+                ),
+            )
+            np.copyto(
+                self.rewards[:remaining],
+                np.expand_dims(reward[num_to_add : num_to_add + remaining], axis=-1),
+            )
+            np.copyto(
+                self.next_obses[:remaining],
+                next_obs[num_to_add : num_to_add + remaining],
+            )
+            np.copyto(
+                self.not_dones[:remaining],
+                np.expand_dims(
+                    [not _ for _ in done[num_to_add : num_to_add + remaining]], axis=-1
+                ),
+            )
 
             self.idx = remaining % self.capacity
 
@@ -160,29 +195,36 @@ class ReplayBuffer(object):
         next_obses = torch.as_tensor(self.next_obses[idxs], device=self.device).float()
         not_dones = torch.as_tensor(self.not_dones[idxs], device=self.device)
         if k:
-            return obses, actions, rewards, next_obses, not_dones, torch.as_tensor(self.k_obses[idxs], device=self.device)
+            return (
+                obses,
+                actions,
+                rewards,
+                next_obses,
+                not_dones,
+                torch.as_tensor(self.k_obses[idxs], device=self.device),
+            )
         return obses, actions, curr_rewards, rewards, next_obses, not_dones
 
     def save(self, save_dir):
         if self.idx == self.last_save:
             return
-        path = os.path.join(save_dir, '%d_%d.pt' % (self.last_save, self.idx))
+        path = os.path.join(save_dir, "%d_%d.pt" % (self.last_save, self.idx))
         payload = [
-            self.obses[self.last_save:self.idx],
-            self.next_obses[self.last_save:self.idx],
-            self.actions[self.last_save:self.idx],
-            self.rewards[self.last_save:self.idx],
-            self.curr_rewards[self.last_save:self.idx],
-            self.not_dones[self.last_save:self.idx]
+            self.obses[self.last_save : self.idx],
+            self.next_obses[self.last_save : self.idx],
+            self.actions[self.last_save : self.idx],
+            self.rewards[self.last_save : self.idx],
+            self.curr_rewards[self.last_save : self.idx],
+            self.not_dones[self.last_save : self.idx],
         ]
         self.last_save = self.idx
         torch.save(payload, path)
 
     def load(self, save_dir):
         chunks = os.listdir(save_dir)
-        chucks = sorted(chunks, key=lambda x: int(x.split('_')[0]))
+        chucks = sorted(chunks, key=lambda x: int(x.split("_")[0]))
         for chunk in chucks:
-            start, end = [int(x) for x in chunk.split('.')[0].split('_')]
+            start, end = [int(x) for x in chunk.split(".")[0].split("_")]
             path = os.path.join(save_dir, chunk)
             payload = torch.load(path)
             assert self.idx == start
@@ -200,8 +242,11 @@ class MemSaveReplayBuffer(object):
     Buffer to store environment transitions w/o next_obses.
     Pay attention to handle the next observation when done.
     """
+
     def __init__(self, obs_shape, action_shape, capacity, batch_size, device, nprocs=1):
-        print(f'Building replay buffer with capacity={capacity}, B={batch_size}, obs={obs_shape}, action={action_shape}')
+        print(
+            f"Building replay buffer with capacity={capacity}, B={batch_size}, obs={obs_shape}, action={action_shape}"
+        )
         self.capacity = capacity
         self.batch_size = batch_size
         self.device = device
@@ -221,13 +266,17 @@ class MemSaveReplayBuffer(object):
         self.done_next_obses = {}
 
         # compute memory needed
-        obs_elements = np.prod((capacity + 1, *obs_shape))  # Total number of elements in the array
+        obs_elements = np.prod(
+            (capacity + 1, *obs_shape)
+        )  # Total number of elements in the array
         action_elements = np.prod((capacity, *action_shape))
         reward_elements = np.prod((capacity, 1))
-        obs_memory = obs_elements * self.obses.itemsize / (1024 ** 3)
-        action_memory = action_elements * self.actions.itemsize / (1024 ** 3)
-        reward_memory = reward_elements * self.rewards.itemsize / (1024 ** 3)
-        print(f'Mem: obses need {obs_memory:.2f} GB, action need {action_memory:.2f} GB, reward need {reward_memory:.2f} GB')
+        obs_memory = obs_elements * self.obses.itemsize / (1024**3)
+        action_memory = action_elements * self.actions.itemsize / (1024**3)
+        reward_memory = reward_elements * self.rewards.itemsize / (1024**3)
+        print(
+            f"Mem: obses need {obs_memory:.2f} GB, action need {action_memory:.2f} GB, reward need {reward_memory:.2f} GB"
+        )
 
         self.idx = 0
         self.last_save = 0
@@ -238,11 +287,12 @@ class MemSaveReplayBuffer(object):
             self.add_single(obs, action, curr_reward, reward, next_obs, done)
         else:
             self.add_multi(obs, action, curr_reward, reward, next_obs, done)
-    
+
     def add_single(self, obs, action, curr_reward, reward, next_obs, done):
-        if self.idx != 0 and self.not_dones[self.idx-1]:
+        if self.idx != 0 and self.not_dones[self.idx - 1]:
             pass
-        else: np.copyto(self.obses[self.idx], obs)
+        else:
+            np.copyto(self.obses[self.idx], obs)
         np.copyto(self.actions[self.idx], action)
         np.copyto(self.curr_rewards[self.idx], curr_reward)
         np.copyto(self.rewards[self.idx], reward)
@@ -256,24 +306,36 @@ class MemSaveReplayBuffer(object):
 
         self.idx = next_idx
         self.full = self.full or self.idx == 0
-    
+
     def add_multi(self, obs, action, curr_reward, reward, next_obs, done):
         # Calculate the number of elements that can be added without overflow
         available_space = self.capacity - self.idx
         num_to_add = min(self.nprocs, available_space)
 
         # Add elements that fit within the current capacity
-        np.copyto(self.obses[self.idx:self.idx + num_to_add], obs[:num_to_add])
-        np.copyto(self.actions[self.idx:self.idx + num_to_add], action[:num_to_add])
-        np.copyto(self.curr_rewards[self.idx:self.idx + num_to_add], np.expand_dims(curr_reward[:num_to_add], axis=-1))
-        np.copyto(self.rewards[self.idx:self.idx + num_to_add], np.expand_dims(reward[:num_to_add], axis=-1))
-        np.copyto(self.not_dones[self.idx:self.idx + num_to_add], np.expand_dims([float(not d) for d in done[:num_to_add]], axis=-1))
+        np.copyto(self.obses[self.idx : self.idx + num_to_add], obs[:num_to_add])
+        np.copyto(self.actions[self.idx : self.idx + num_to_add], action[:num_to_add])
+        np.copyto(
+            self.curr_rewards[self.idx : self.idx + num_to_add],
+            np.expand_dims(curr_reward[:num_to_add], axis=-1),
+        )
+        np.copyto(
+            self.rewards[self.idx : self.idx + num_to_add],
+            np.expand_dims(reward[:num_to_add], axis=-1),
+        )
+        np.copyto(
+            self.not_dones[self.idx : self.idx + num_to_add],
+            np.expand_dims([float(not d) for d in done[:num_to_add]], axis=-1),
+        )
 
         for i in range(num_to_add):
             if done[i]:
                 self.done_next_obses[(self.idx + i) % self.capacity] = next_obs[i]
             else:
-                np.copyto(self.obses[(self.idx + i + self.nprocs) % self.capacity], next_obs[i])
+                np.copyto(
+                    self.obses[(self.idx + i + self.nprocs) % self.capacity],
+                    next_obs[i],
+                )
 
         # Update index and handle overflow
         self.idx = (self.idx + num_to_add) % self.capacity
@@ -282,17 +344,36 @@ class MemSaveReplayBuffer(object):
         # Handle overflow by wrapping around and adding remaining elements
         if num_to_add < self.nprocs:
             remaining = self.nprocs - num_to_add
-            np.copyto(self.obses[:remaining], obs[num_to_add:num_to_add + remaining])
-            np.copyto(self.actions[:remaining], action[num_to_add:num_to_add + remaining])
-            np.copyto(self.curr_rewards[:remaining], np.expand_dims(curr_reward[num_to_add:num_to_add + remaining], axis=-1))
-            np.copyto(self.rewards[:remaining], np.expand_dims(reward[num_to_add:num_to_add + remaining], axis=-1))
-            np.copyto(self.not_dones[:remaining], np.expand_dims([float(not d) for d in done[num_to_add:num_to_add + remaining]], axis=-1))
+            np.copyto(self.obses[:remaining], obs[num_to_add : num_to_add + remaining])
+            np.copyto(
+                self.actions[:remaining], action[num_to_add : num_to_add + remaining]
+            )
+            np.copyto(
+                self.curr_rewards[:remaining],
+                np.expand_dims(
+                    curr_reward[num_to_add : num_to_add + remaining], axis=-1
+                ),
+            )
+            np.copyto(
+                self.rewards[:remaining],
+                np.expand_dims(reward[num_to_add : num_to_add + remaining], axis=-1),
+            )
+            np.copyto(
+                self.not_dones[:remaining],
+                np.expand_dims(
+                    [float(not d) for d in done[num_to_add : num_to_add + remaining]],
+                    axis=-1,
+                ),
+            )
 
             for i in range(remaining):
                 if done[num_to_add + i]:
                     self.done_next_obses[i] = next_obs[num_to_add + i]
                 else:
-                    np.copyto(self.obses[(i + self.nprocs) % self.capacity], next_obs[num_to_add + i])
+                    np.copyto(
+                        self.obses[(i + self.nprocs) % self.capacity],
+                        next_obs[num_to_add + i],
+                    )
 
             self.idx = remaining % self.capacity
 
@@ -309,49 +390,64 @@ class MemSaveReplayBuffer(object):
         not_dones = torch.as_tensor(self.not_dones[idxs], device=self.device)
 
         # Preallocate the next_obses tensor using the next observations calculated in bulk
-        next_obses = torch.as_tensor(self.obses[next_idxs], device=self.device, dtype=torch.float32)
+        next_obses = torch.as_tensor(
+            self.obses[next_idxs], device=self.device, dtype=torch.float32
+        )
 
         # Create a mask where done is True (i.e., where we need to replace with done_next_obses)
-        done_mask = torch.tensor([idx in self.done_next_obses for idx in idxs], device=self.device)
+        done_mask = torch.tensor(
+            [idx in self.done_next_obses for idx in idxs], device=self.device
+        )
 
         # Collect the indices where done is True
         done_indices = torch.where(done_mask)[0]
 
         # Gather the corresponding done_next_obses and replace them in the preallocated tensor
         if done_indices.numel() > 0:
-            done_next_obs_list = np.array([self.done_next_obses[idxs[i]] for i in done_indices.cpu().numpy()])
-            done_next_obses = torch.as_tensor(done_next_obs_list, device=self.device, dtype=torch.float32)
+            done_next_obs_list = np.array(
+                [self.done_next_obses[idxs[i]] for i in done_indices.cpu().numpy()]
+            )
+            done_next_obses = torch.as_tensor(
+                done_next_obs_list, device=self.device, dtype=torch.float32
+            )
             next_obses[done_indices] = done_next_obses
 
         if k:  # need further inspection
-            return obses, actions, rewards, next_obses, not_dones, torch.as_tensor(self.k_obses[idxs], device=self.device)
+            return (
+                obses,
+                actions,
+                rewards,
+                next_obses,
+                not_dones,
+                torch.as_tensor(self.k_obses[idxs], device=self.device),
+            )
         return obses, actions, curr_rewards, rewards, next_obses, not_dones
 
     def save(self, save_dir):
         if self.idx == self.last_save:
             return
-        path = os.path.join(save_dir, '%d_%d.pt' % (self.last_save, self.idx))
+        path = os.path.join(save_dir, "%d_%d.pt" % (self.last_save, self.idx))
         payload = [
-            self.obses[self.last_save:self.idx],
-            self.actions[self.last_save:self.idx],
-            self.rewards[self.last_save:self.idx],
-            self.curr_rewards[self.last_save:self.idx],
-            self.not_dones[self.last_save:self.idx],
-            self.done_next_obses
+            self.obses[self.last_save : self.idx],
+            self.actions[self.last_save : self.idx],
+            self.rewards[self.last_save : self.idx],
+            self.curr_rewards[self.last_save : self.idx],
+            self.not_dones[self.last_save : self.idx],
+            self.done_next_obses,
         ]
         self.last_save = self.idx
         torch.save(payload, path)
 
     def save_obs(self, save_dir, name):
         assert self.full
-        path = os.path.join(save_dir, f'obs_{name}.pt')
+        path = os.path.join(save_dir, f"obs_{name}.pt")
         torch.save(self.obses, path)
 
     def load(self, save_dir):
         chunks = os.listdir(save_dir)
-        chucks = sorted(chunks, key=lambda x: int(x.split('_')[0]))
+        chucks = sorted(chunks, key=lambda x: int(x.split("_")[0]))
         for chunk in chucks:
-            start, end = [int(x) for x in chunk.split('.')[0].split('_')]
+            start, end = [int(x) for x in chunk.split(".")[0].split("_")]
             path = os.path.join(save_dir, chunk)
             payload = torch.load(path)
             assert self.idx == start
@@ -368,8 +464,13 @@ class ObsMemory(object):
     """
     A lightweight buffer to only store observations.
     """
-    def __init__(self, obs_shape, capacity, batch_size, device, nprocs=1, clean_obs_shape=None):
-        print(f'Building observation memory with capacity={capacity}, B={batch_size}, obs={obs_shape}')
+
+    def __init__(
+        self, obs_shape, capacity, batch_size, device, nprocs=1, clean_obs_shape=None
+    ):
+        print(
+            f"Building observation memory with capacity={capacity}, B={batch_size}, obs={obs_shape}"
+        )
         self.capacity = capacity
         self.batch_size = batch_size
         self.device = device
@@ -381,12 +482,16 @@ class ObsMemory(object):
         self.obs_dtype = np.float32 if len(obs_shape) == 1 else np.uint8
         self.obses = np.empty((capacity, *obs_shape), dtype=self.obs_dtype)
         if clean_obs_shape is not None:
-            self.clean_obses = np.empty((capacity, *clean_obs_shape), dtype=self.obs_dtype)
+            self.clean_obses = np.empty(
+                (capacity, *clean_obs_shape), dtype=self.obs_dtype
+            )
 
         # compute memory needed
-        obs_elements = np.prod((capacity, *obs_shape))  # Total number of elements in the array
-        obs_memory = obs_elements * self.obses.itemsize / (1024 ** 3)
-        print(f'ObsMem: need {obs_memory:.2f} GB')
+        obs_elements = np.prod(
+            (capacity, *obs_shape)
+        )  # Total number of elements in the array
+        obs_memory = obs_elements * self.obses.itemsize / (1024**3)
+        print(f"ObsMem: need {obs_memory:.2f} GB")
 
         self.idx = 0
         self.batch_number = 0
@@ -412,9 +517,12 @@ class ObsMemory(object):
         num_to_add = min(self.nprocs, available_space)
 
         # Add elements that fit within the current capacity
-        np.copyto(self.obses[self.idx:self.idx + num_to_add], obs[:num_to_add])
+        np.copyto(self.obses[self.idx : self.idx + num_to_add], obs[:num_to_add])
         if clean_obs is not None:
-            np.copyto(self.clean_obses[self.idx:self.idx + num_to_add], clean_obs[:num_to_add])
+            np.copyto(
+                self.clean_obses[self.idx : self.idx + num_to_add],
+                clean_obs[:num_to_add],
+            )
 
         # Update index and handle overflow
         self.idx = (self.idx + num_to_add) % self.capacity
@@ -423,9 +531,12 @@ class ObsMemory(object):
         # Handle overflow by wrapping around and adding remaining elements
         if num_to_add < self.nprocs:
             remaining = self.nprocs - num_to_add
-            np.copyto(self.obses[:remaining], obs[num_to_add:num_to_add + remaining])
+            np.copyto(self.obses[:remaining], obs[num_to_add : num_to_add + remaining])
             if clean_obs is not None:
-                np.copyto(self.clean_obses[:remaining], clean_obs[num_to_add:num_to_add + remaining])
+                np.copyto(
+                    self.clean_obses[:remaining],
+                    clean_obs[num_to_add : num_to_add + remaining],
+                )
             self.idx = remaining % self.capacity
 
     def clear(self):
@@ -433,7 +544,9 @@ class ObsMemory(object):
         self.full = False
         self.obses = np.empty((self.capacity, *self.obs_shape), dtype=self.obs_dtype)
         if self.clean_obs_shape is not None:
-            self.clean_obses = np.empty((self.capacity, *self.clean_obs_shape), dtype=self.obs_dtype)
+            self.clean_obses = np.empty(
+                (self.capacity, *self.clean_obs_shape), dtype=self.obs_dtype
+            )
 
     def sample(self, batch_size=None):
         batch_size = self.batch_size if batch_size is None else batch_size
@@ -444,7 +557,8 @@ class ObsMemory(object):
         return obses
 
     def sample_clean_obs(self, batch_size=None):
-        if self.clean_obs_shape is None: return None
+        if self.clean_obs_shape is None:
+            return None
         batch_size = self.batch_size if batch_size is None else batch_size
         idxs = np.random.randint(
             0, self.capacity if self.full else self.idx, size=batch_size
@@ -452,10 +566,9 @@ class ObsMemory(object):
         clean_obses = np.array(self.clean_obses[idxs], dtype=np.float32)
         return clean_obses
 
-
     def save_all(self, save_dir, name):
         assert self.full
-        path = os.path.join(save_dir, f'obsmem_{name}_{self.batch_number}.pt')
+        path = os.path.join(save_dir, f"obsmem_{name}_{self.batch_number}.pt")
         self.batch_number += 1
         torch.save(self.obses, path)
 

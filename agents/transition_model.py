@@ -4,8 +4,14 @@ import torch.nn as nn
 
 
 class DeterministicTransitionModel(nn.Module):
-    def __init__(self, encoder_feature_dim, action_shape, layer_width,
-                 encoder_max_norm=None, encoder_max_norm_ord=None):
+    def __init__(
+        self,
+        encoder_feature_dim,
+        action_shape,
+        layer_width,
+        encoder_max_norm=None,
+        encoder_max_norm_ord=None,
+    ):
         super().__init__()
         self.fc = nn.Linear(encoder_feature_dim + action_shape[0], layer_width)
         self.ln = nn.LayerNorm(layer_width)
@@ -37,17 +43,26 @@ class DeterministicTransitionModel(nn.Module):
 
 
 class ProbabilisticTransitionModel(nn.Module):
-    def __init__(self, encoder_feature_dim, action_shape, layer_width, announce=True, max_sigma=1e1, min_sigma=1e-4,
-                 encoder_max_norm=None, encoder_max_norm_ord=None):
+    def __init__(
+        self,
+        encoder_feature_dim,
+        action_shape,
+        layer_width,
+        announce=True,
+        max_sigma=1e1,
+        min_sigma=1e-4,
+        encoder_max_norm=None,
+        encoder_max_norm_ord=None,
+    ):
         super().__init__()
-        self.fc = nn. Linear(encoder_feature_dim + action_shape[0], layer_width)
+        self.fc = nn.Linear(encoder_feature_dim + action_shape[0], layer_width)
         self.ln = nn.LayerNorm(layer_width)
         self.fc_mu = nn.Linear(layer_width, encoder_feature_dim)
         self.fc_sigma = nn.Linear(layer_width, encoder_feature_dim)
 
         self.max_sigma = max_sigma
         self.min_sigma = min_sigma
-        assert(self.max_sigma >= self.min_sigma)
+        assert self.max_sigma >= self.min_sigma
         if announce:
             print("Probabilistic transition model chosen.")
 
@@ -63,7 +78,9 @@ class ProbabilisticTransitionModel(nn.Module):
         if self.max_norm and normalize:
             mu = self.normalize(mu)
         sigma = torch.sigmoid(self.fc_sigma(x))  # range (0, 1.)
-        sigma = self.min_sigma + (self.max_sigma - self.min_sigma) * sigma  # scaled range (min_sigma, max_sigma)
+        sigma = (
+            self.min_sigma + (self.max_sigma - self.min_sigma) * sigma
+        )  # scaled range (min_sigma, max_sigma)
         return mu, sigma
 
     def sample_prediction(self, x):
@@ -83,13 +100,26 @@ class ProbabilisticTransitionModel(nn.Module):
 
 
 class BaseEnsembleTransitionModel(object):
-    def __init__(self, model_class, encoder_feature_dim, action_shape, layer_width,
-                 ensemble_size=5, announce=False,
-                 encoder_max_norm=None, encoder_max_norm_ord=None):
+    def __init__(
+        self,
+        model_class,
+        encoder_feature_dim,
+        action_shape,
+        layer_width,
+        ensemble_size=5,
+        announce=False,
+        encoder_max_norm=None,
+        encoder_max_norm_ord=None,
+    ):
         self.models = [
-            model_class(encoder_feature_dim, action_shape, layer_width,
-                        announce=announce,
-                        encoder_max_norm=encoder_max_norm, encoder_max_norm_ord=encoder_max_norm_ord)
+            model_class(
+                encoder_feature_dim,
+                action_shape,
+                layer_width,
+                announce=announce,
+                encoder_max_norm=encoder_max_norm,
+                encoder_max_norm_ord=encoder_max_norm_ord,
+            )
             for _ in range(ensemble_size)
         ]
         print(f"Ensemble of {model_class.__name__} transition models chosen.")
@@ -117,33 +147,69 @@ class BaseEnsembleTransitionModel(object):
 
 
 class EnsembleOfProbabilisticTransitionModels(BaseEnsembleTransitionModel):
-    def __init__(self, encoder_feature_dim, action_shape, layer_width, ensemble_size=5,
-                 encoder_max_norm=None, encoder_max_norm_ord=None):
-        super().__init__(ProbabilisticTransitionModel, encoder_feature_dim,
-                         action_shape, layer_width, ensemble_size,
-                         encoder_max_norm, encoder_max_norm_ord)
+    def __init__(
+        self,
+        encoder_feature_dim,
+        action_shape,
+        layer_width,
+        ensemble_size=5,
+        encoder_max_norm=None,
+        encoder_max_norm_ord=None,
+    ):
+        super().__init__(
+            ProbabilisticTransitionModel,
+            encoder_feature_dim,
+            action_shape,
+            layer_width,
+            ensemble_size,
+            encoder_max_norm,
+            encoder_max_norm_ord,
+        )
 
 
 class EnsembleOfDeterministicTransitionModels(BaseEnsembleTransitionModel):
-    def __init__(self, encoder_feature_dim, action_shape, layer_width, ensemble_size=5,
-                 encoder_max_norm=None, encoder_max_norm_ord=None):
-        super().__init__(DeterministicTransitionModel, encoder_feature_dim,
-                         action_shape, layer_width, ensemble_size,
-                         encoder_max_norm, encoder_max_norm_ord)
+    def __init__(
+        self,
+        encoder_feature_dim,
+        action_shape,
+        layer_width,
+        ensemble_size=5,
+        encoder_max_norm=None,
+        encoder_max_norm_ord=None,
+    ):
+        super().__init__(
+            DeterministicTransitionModel,
+            encoder_feature_dim,
+            action_shape,
+            layer_width,
+            ensemble_size,
+            encoder_max_norm,
+            encoder_max_norm_ord,
+        )
 
 
-_AVAILABLE_TRANSITION_MODELS = {'': DeterministicTransitionModel,
-                                'deterministic': DeterministicTransitionModel,
-                                'probabilistic': ProbabilisticTransitionModel,
-                                'ensemble': EnsembleOfProbabilisticTransitionModels,
-                                'ensemble_det': EnsembleOfDeterministicTransitionModels,
-                                }
+_AVAILABLE_TRANSITION_MODELS = {
+    "": DeterministicTransitionModel,
+    "deterministic": DeterministicTransitionModel,
+    "probabilistic": ProbabilisticTransitionModel,
+    "ensemble": EnsembleOfProbabilisticTransitionModels,
+    "ensemble_det": EnsembleOfDeterministicTransitionModels,
+}
 
 
-def make_transition_model(transition_model_type, encoder_feature_dim, action_shape, layer_width=512,
-                          encoder_max_norm=None, encoder_max_norm_ord=None):
+def make_transition_model(
+    transition_model_type,
+    encoder_feature_dim,
+    action_shape,
+    layer_width=512,
+    encoder_max_norm=None,
+    encoder_max_norm_ord=None,
+):
     assert transition_model_type in _AVAILABLE_TRANSITION_MODELS
     return _AVAILABLE_TRANSITION_MODELS[transition_model_type](
-        encoder_feature_dim, action_shape, layer_width,
-        encoder_max_norm=encoder_max_norm, encoder_max_norm_ord=encoder_max_norm_ord
+        encoder_feature_dim,
+        action_shape,
+        layer_width,
+        encoder_max_norm=encoder_max_norm,
+        encoder_max_norm_ord=encoder_max_norm_ord,
     )
