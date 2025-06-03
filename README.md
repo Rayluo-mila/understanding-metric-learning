@@ -1,6 +1,6 @@
-# Understanding Behavioral Metric Learning in Deep RL: A Large-Scale Study on Distracting Environments
+# Understanding Behavioral Metric Learning in Deep Reinforcement Learning
 
-📄 "Understanding Behavioral Metric Learning in Deep RL: A Large-Scale Study on Distracting Environments", [Reinforcement Learning Conference (RLC)](https://rl-conference.cc/) 2025
+📄 ["Understanding Behavioral Metric Learning: A Large-Scale Study on Distracting Reinforcement Learning Environments"](https://arxiv.org/abs/2506.00563), [Reinforcement Learning Conference (RLC)](https://rl-conference.cc/) 2025
 by [Ziyan "Ray" Luo](https://zyluo.netlify.app/)¹², [Tianwei Ni](https://twni2016.github.io/)¹³, [Pierre-Luc Bacon](https://pierrelucbacon.com/)¹³⁵, [Doina Precup](https://mila.quebec/en/directory/doina-precup)¹²⁵, [Xujie Si](https://www.cs.toronto.edu/~six/)¹⁴⁵
 
 1. [Mila - Quebec Artificial Intelligence Institute](https://mila.quebec/), Montreal, Canada
@@ -110,6 +110,8 @@ See [`cfgs/README.md`](https://github.com/Rayluo-mila/understanding-metric-learn
 
 - Run the experiment with the new agent by passing the agent name to the [`main.py`](https://github.com/Rayluo-mila/understanding-metric-learning/blob/main/main.py) script.
 
+- If you want to customize the environment, you can put your own environment in the [`environments/`](https://github.com/Rayluo-mila/understanding-metric-learning/tree/main/environments) directory. Then, add a new trainer (for training and evaluation) for your environment in [`trainers/`](https://github.com/Rayluo-mila/understanding-metric-learning/tree/main/trainers) (see [`trainers/dmc_pixel.py`](https://github.com/Rayluo-mila/understanding-metric-learning/blob/main/trainers/dmc_pixel.py) for an example). Last, add a new entry in [`main.py`](https://github.com/Rayluo-mila/understanding-metric-learning/blob/main/main.py) and pass your environment's name to the `main.py` script to run the experiment.
+
 
 ## ❓ Questions and Issues
 If you have any questions or issues, please feel free to email us (ziyan.luo@mail.mcgill.ca, twni2016@gmail.com), or open an issue on GitHub. We glad to hear any form of feedback, and will try our best to help you.
@@ -132,7 +134,7 @@ If you have any questions or issues, please feel free to email us (ziyan.luo@mai
 - **Matching under Independent Couplings (MICo)**  
   [📄 Paper](https://proceedings.neurips.cc/paper_files/paper/2021/hash/fd06b8ea02fe5b1c2496fe1700e9d16c-Abstract.html) | [💻 Code](https://github.com/google-research/google-research/blob/bb19948d367f3337c16176232e86069bf36b0bf5/mico)
 
-- **DBC-normed**  
+- **DBC with max normalization (DBC-normed)**  
   [📄 Paper](https://arxiv.org/abs/2110.14096) | [💻 Code](https://github.com/metekemertas/RobustBisimulation)
 
 - **Simple Distance-based State Representation (SimSR)**  
