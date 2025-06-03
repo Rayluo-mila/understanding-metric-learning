@@ -79,7 +79,7 @@ agents:
 
   ### Section 5.2: case studies
   simsr-basic:
-    # SimSR (Basic)
+    # Figure 3, SimSR (Basic)
     class_path: agents.mico_agent_sac.MICoAgent
     encoder_post_processing: "l2_norm"
     transition_model_type: "probabilistic"
@@ -89,7 +89,7 @@ agents:
     metric_loss_type: "huber"
 
   simsr-basic-nozp:
-    # SimSR (Basic, No ZP)
+    # Figure 3, SimSR (Basic, No ZP)
     class_path: agents.mico_agent_sac.MICoAgent
     encoder_post_processing: "l2_norm"
     bisim_dist: "simsr_basic"
@@ -99,7 +99,7 @@ agents:
     metric_loss_type: "huber"
 
   simsr-withrp:
-    # SimSR (with RP)
+    # Figure 3, SimSR (with RP)
     class_path: agents.mico_agent_sac.MICoAgent
     encoder_post_processing: "l2_norm"
     transition_model_type: "probabilistic"
@@ -107,17 +107,8 @@ agents:
     r_dist: "L1"
     metric_loss_type: "huber"
 
-  dbcnormed-huber-target:
-    class_path: agents.bisim_agent_sac.BisimAgent
-    transition_model_type: "probabilistic"
-    bisim_dist: "huber_mean"
-    r_dist: "huber"
-    prob_dist: "huber_mean"
-    encoder_max_norm: true
-    use_target_encoder: true
-    metric_loss_type: "huber"
-
   dbcnormed-huber:
+    # Figure 28, DBC-normed (Huber)
     class_path: agents.bisim_agent_sac.BisimAgent
     transition_model_type: "probabilistic"
     bisim_dist: "huber_mean"
@@ -127,6 +118,7 @@ agents:
     metric_loss_type: "huber"
 
   dbcnormed-target:
+    # Figure 28, DBC-normed (Target)
     class_path: agents.bisim_agent_sac.BisimAgent
     transition_model_type: "probabilistic"
     bisim_dist: "huber_mean"
@@ -134,6 +126,17 @@ agents:
     prob_dist: "huber_mean"
     encoder_max_norm: true
     use_target_encoder: true
+  
+  dbcnormed-huber-target:
+    # Figure 28, DBC-normed (Huber & Target)
+    class_path: agents.bisim_agent_sac.BisimAgent
+    transition_model_type: "probabilistic"
+    bisim_dist: "huber_mean"
+    r_dist: "huber"
+    prob_dist: "huber_mean"
+    encoder_max_norm: true
+    use_target_encoder: true
+    metric_loss_type: "huber"
 
   ### Section 5.3: isolated settings
   sac-isolated-metric-dbc:
@@ -170,6 +173,63 @@ agents:
     bisim_dist: "simsr"
     r_dist: "L1"
     metric_loss_type: "huber"
+  
+  sac-isolated-metric-zp:
+    class_path: agents.isolated_metric_agent.IsolatedMetricSACAgent
+    transition_model_type: 'probabilistic'
+    bisim_dist: 'huber_mean'
+    r_dist: 'huber'
+    metric_loss_type: 'L2'
+    metric_zp_detach_encoder: false
+    bisim_coef: 0
+  
+  sac-isolated-metric-rzp:
+    class_path: agents.isolated_metric_agent.IsolatedMetricSACAgent
+    transition_model_type: 'probabilistic'
+    bisim_dist: 'huber_mean'
+    r_dist: 'huber'
+    metric_loss_type: 'L2'
+    metric_zp_detach_encoder: false
+    metric_rp_detach_encoder: false
+    bisim_coef: 0
+  
+  sac-isolated-metric-dbc-zp:
+    class_path: agents.isolated_metric_agent.IsolatedMetricSACAgent
+    encoder_max_norm: false
+    encoder_max_norm_metric: false
+    transition_model_type: 'probabilistic'
+    bisim_dist: 'huber_mean'
+    r_dist: 'huber'
+    metric_loss_type: 'L2'
+    metric_zp_detach_encoder: false
+    bisim_coef: 0.5
+  
+  sac-isolated-metric-rdbc-zp:
+    class_path: agents.isolated_metric_agent.IsolatedMetricSACAgent
+    encoder_max_norm: false
+    encoder_max_norm_metric: true
+    transition_model_type: 'probabilistic'
+    bisim_dist: 'huber_mean'
+    r_dist: 'huber'
+    prob_dist: 'huber_mean'
+    metric_loss_type: 'L2'
+    metric_zp_detach_encoder: false
+    bisim_coef: 0.5
+
+  sac-isolated-metric-mico-zp:
+    class_path: agents.isolated_metric_agent.IsolatedMetricSACAgent
+    bisim_dist: 'mico'
+    r_dist: 'L1'
+    use_target_encoder: true
+    metric_loss_type: 'huber'
+    metric_zp_detach_encoder: false
+  
+  sac-isolated-metric-simsr-zp:
+    class_path: agents.isolated_metric_agent.IsolatedMetricSACAgent
+    bisim_dist: 'simsr'
+    r_dist: 'L1'
+    metric_loss_type: 'huber'
+    metric_zp_detach_encoder: false
 
   ### Experimental settings (not included in the paper)
   deepmdp-l2normed:
