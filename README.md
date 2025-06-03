@@ -1,6 +1,7 @@
 # Understanding Behavioral Metric Learning in Deep Reinforcement Learning
 
 📄 ["Understanding Behavioral Metric Learning: A Large-Scale Study on Distracting Reinforcement Learning Environments"](https://arxiv.org/abs/2506.00563), [Reinforcement Learning Conference (RLC)](https://rl-conference.cc/) 2025
+
 by [Ziyan "Ray" Luo](https://zyluo.netlify.app/)¹², [Tianwei Ni](https://twni2016.github.io/)¹³, [Pierre-Luc Bacon](https://pierrelucbacon.com/)¹³⁵, [Doina Precup](https://mila.quebec/en/directory/doina-precup)¹²⁵, [Xujie Si](https://www.cs.toronto.edu/~six/)¹⁴⁵
 
 1. [Mila - Quebec Artificial Intelligence Institute](https://mila.quebec/), Montreal, Canada
@@ -131,17 +132,17 @@ If you have any questions or issues, please feel free to email us (ziyan.luo@mai
 - **Deep Bisimulation Control (DBC)**  
   [📄 Paper](https://arxiv.org/abs/2006.10742) | [💻 Code](https://github.com/facebookresearch/deep_bisim4control)
 
-- **Matching under Independent Couplings (MICo)**  
-  [📄 Paper](https://proceedings.neurips.cc/paper_files/paper/2021/hash/fd06b8ea02fe5b1c2496fe1700e9d16c-Abstract.html) | [💻 Code](https://github.com/google-research/google-research/blob/bb19948d367f3337c16176232e86069bf36b0bf5/mico)
-
 - **DBC with max normalization (DBC-normed)**  
   [📄 Paper](https://arxiv.org/abs/2110.14096) | [💻 Code](https://github.com/metekemertas/RobustBisimulation)
 
-- **Simple Distance-based State Representation (SimSR)**  
-  [📄 Paper](https://arxiv.org/abs/2112.15303) | [💻 Code](https://github.com/bit1029public/SimSR)
+- **Matching under Independent Couplings (MICo)**  
+  [📄 Paper](https://proceedings.neurips.cc/paper_files/paper/2021/hash/fd06b8ea02fe5b1c2496fe1700e9d16c-Abstract.html) | [💻 Code](https://github.com/google-research/google-research/blob/bb19948d367f3337c16176232e86069bf36b0bf5/mico)
 
 - **Reducing Approximation Gap (RAP)**  
   [📄 Paper](https://proceedings.neurips.cc/paper_files/paper/2022/hash/eda9523faa5e7191aee1c2eaff669716-Abstract-Conference.html) | [💻 Code](https://github.com/jianda-chen/RAP_distance)
+
+- **Simple Distance-based State Representation (SimSR)**  
+  [📄 Paper](https://arxiv.org/abs/2112.15303) | [💻 Code](https://github.com/bit1029public/SimSR)
 
 
 
