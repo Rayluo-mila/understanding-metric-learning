@@ -7,7 +7,6 @@
 *.pk
 wandb
 *.mp4
-*.sh
 *.whl
 *.csv
 *.tex

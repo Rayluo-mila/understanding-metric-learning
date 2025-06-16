@@ -31,7 +31,7 @@ replay_buffer_capacity: 1000000
 
 # Eval
 eval_freq: 50
-eval_bism_states: true
+eval_bism_states: true  # open to evaluate DF
 anchor_batch_size: 125
 pos_neg_batch_size: 16
 num_eval_episodes: 10

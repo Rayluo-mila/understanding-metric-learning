@@ -33,9 +33,11 @@ A modular framework that affords the comparison of *different behavioral metrics
 
     - (For better control of the dataset) Download the [Kinetics-400 dataset](https://github.com/Showmax/kinetics-downloader). Extract the videos under `driving_car` label from the train dataset to `environments/dmc2gym/res/train_video` and `environments/dmc2gym/res/eval_video`, or store in some other directory you want and set the `resource_files` and `eval_resource_files` in `cfgs/env/dmc_pixel.yaml` to the specific directory.
 
-## 🚀 To run the minimal experiments
+## 🚀 To run the experiments
 
-To run a minimal experiment (see Appendix F.1, **Hyperparameters** section for configuration details), use the following commands. They perform *ID and OOD generalization evaluations* concurrently.
+Please refer to the [`experiments/`](https://github.com/Rayluo-mila/understanding-metric-learning/tree/main/experiments) directory for the scripts that run the experiments in the paper. Detailed instructions are provided in the scripts.
+
+To run minimal experiments (see Appendix F.1, **Hyperparameters** section for configuration details), use the following commands. Each script performs *ID and OOD generalization evaluations* concurrently.
 
 ### 🧪 State-based DMC (IID Gaussian Noise)
 
@@ -96,12 +98,12 @@ See [`cfgs/README.md`](https://github.com/Rayluo-mila/understanding-metric-learn
 
 - [`environments/`](https://github.com/Rayluo-mila/understanding-metric-learning/tree/main/environments): Environment interfaces and wrappers built on [dm_control](https://github.com/google-deepmind/dm_control).
 
-- [`trainers/`](https://github.com/Rayluo-mila/understanding-metric-learning/tree/main/trainers): Training and evaluation loops for different domains.
+- [`trainers/`](https://github.com/Rayluo-mila/understanding-metric-learning/tree/main/trainers): Training and evaluation loops for different environments.
 
 - [`utils/`](https://github.com/Rayluo-mila/understanding-metric-learning/tree/main/utils): Utility functions (e.g., logging, seeding, and replay buffers).
 
 
-## 🔧 Steps to DIY your own (metric-based) agents
+## 🔧 Steps to DIY your own (metric-based) RL agents
 
 - Create a new agent by inheriting from the `BaseAgent` class in [`agents/base_agent.py`](https://github.com/Rayluo-mila/understanding-metric-learning/blob/main/agents/base_agent.py). You can refer to the existing agents for examples.
 
@@ -115,7 +117,7 @@ See [`cfgs/README.md`](https://github.com/Rayluo-mila/understanding-metric-learn
 
 
 ## ❓ Questions and Issues
-If you have any questions or issues, please feel free to email us (ziyan.luo@mail.mcgill.ca, twni2016@gmail.com), or open an issue on GitHub. We glad to hear any form of feedback, and will try our best to help you.
+If you have any questions or issues, please feel free to email us (ziyan.luo@mail.mcgill.ca, twni2016@gmail.com), or open an issue on GitHub. We are glad to hear any form of feedback, and will try our best to help you.
 
 
 ## 📚 References

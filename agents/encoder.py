@@ -1,31 +1,12 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from typing import Optional
 
 
 def tie_weights(src, trg):
     assert type(src) == type(trg)
     trg.weight = src.weight
     trg.bias = src.bias
-
-
-def soft_clamp(
-    x: torch.Tensor,
-    _min: Optional[torch.Tensor] = None,
-    _max: Optional[torch.Tensor] = None,
-) -> torch.Tensor:
-    # clamp tensor values while mataining the gradient
-    # adapted from https://github.com/yihaosun1124/OfflineRL-Kit/blob/main/offlinerlkit/modules/dynamics_module.py#L18
-    if _max is not None:
-        x = _max - F.softplus(_max - x)
-    if _min is not None:
-        x = _min + F.softplus(x - _min)
-
-
-def AvgL1Norm(x, eps=1e-8):
-    # adapted from https://github.com/sfujim/TD7/blob/main/TD7.py
-    return x / x.abs().mean(-1, keepdim=True).clamp(min=eps)
 
 
 class BasePixelEncoder(nn.Module):
@@ -139,7 +120,7 @@ class PixelEncoder(BasePixelEncoder):
 
 
 class PixelEncoderNoLayerNorm(BasePixelEncoder):
-    """Convolutional encoder of pixels observations with LayerNorm and optional max norm constraint."""
+    """Convolutional encoder of pixels observations with optional max norm constraint."""
 
     def __init__(
         self,
