@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import importlib
 
 import utils.rl_utils as rl_utils
 from agents.bisim_agent_sac import BisimAgent
@@ -314,6 +313,6 @@ class IsolatedMetricSACAgent(BisimAgent):
         self.encoder_metric.load_state_dict(
             torch.load("%s/encoder_metric_%s.pt" % (model_dir, step))
         )
-        self.encoder_metric.load_state_dict(
+        self.encoder_metric_target.load_state_dict(
             torch.load("%s/encoder_metric_target_%s.pt" % (model_dir, step))
         )

@@ -35,15 +35,22 @@ A modular framework that affords the comparison of *different behavioral metrics
 
 - Install packages in `requirements.txt`: `pip install -r requirements.txt`
 
-- Prepare Kinetics-400 dataset for natural images / video backgrounds (choose one of the two): 
-    - (Recommended, for reproducing our result) Download the preprocessed dataset from [Google Drive](https://drive.google.com/file/d/1dkrB_2RWztCrEp_0A4UiEYtkqILgo5Hv/view?usp=sharing) and extract it to `environments/dmc2gym/res/`. The directory structure should look like:
-        ```
-        environments/dmc2gym/res/
-            ├── train_video
-            └── eval_video
-        ```
+- Prepare Kinetics-400 dataset for natural images / video backgrounds (choose one of the following options):
 
-    - (For better control of the dataset) Download the [Kinetics-400 dataset](https://github.com/Showmax/kinetics-downloader). Extract the videos under `driving_car` label from the train dataset to `environments/dmc2gym/res/train_video` and `environments/dmc2gym/res/eval_video`, or store in some other directory you want and set the `resource_files` and `eval_resource_files` in `cfgs/env/dmc_pixel.yaml` to the specific directory.
+  - **Option 1: Use Preprocessed Dataset (Recommended for Reproducibility)**  
+    Download the preprocessed dataset from [Google Drive](https://drive.google.com/file/d/1dkrB_2RWztCrEp_0A4UiEYtkqILgo5Hv/view?usp=sharing) and extract it to `environments/dmc2gym/res/`. The directory structure should be:
+    ```
+    environments/dmc2gym/res/
+      ├── train_video
+      └── eval_video
+    ```
+    - **Option 2: Custom Download and Preprocessing**  
+      1. Download the raw [Kinetics-400 dataset](https://github.com/Showmax/kinetics-downloader). (or other dataset like [DAVIS](https://davischallenge.org/davis2017/code.html)).
+      2. Extract videos labeled `driving_car` from the Kinetic's train split.
+      3. Place the extracted videos of your choice in:
+          - `environments/dmc2gym/res/train_video` (for training),
+          - `environments/dmc2gym/res/eval_video` (for evaluation).
+      4. Alternatively, you may store the videos in a directory of your choice and set the `resource_files` and `eval_resource_files` fields in `cfgs/env/dmc_pixel.yaml` to point to your dataset location.
 
 ## 🚀 To run the experiments
 
