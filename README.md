@@ -1,4 +1,4 @@
-# Understanding Behavioral Metric Learning in Deep Reinforcement Learning
+# Understanding Metric Learning in Deep RL
 
 <div align="center">
 

@@ -1,6 +1,49 @@
 # Experimental agent configurations
-# Uncomment and modify the following to add custom agent settings that override defaults
-# 
-# agents:
-#   agent_name:
-#     param: value
+### The following settings are not included in the paper
+
+agents:
+  deepmdp-l2normed:
+    # DeepMDP with L2 normalization in the representation space
+    class_path: agents.deepmdp_agent.DeepMDPAgent
+    encoder_post_processing: "l2_norm"
+    transition_model_type: "probabilistic"
+    decoder_type: "identity"
+
+  simsr-ens:
+    # https://github.com/bit1029public/SimSR/blob/main/simsr_sac.py
+    class_path: agents.mico_agent_sac.MICoAgent
+    encoder_post_processing: "l2_norm"
+    transition_model_type: "ensemble_v2"
+    bisim_dist: "simsr"
+    r_dist: "L1"
+    rp: false
+    metric_loss_type: "huber"
+
+  dbcnormed-detachrz:
+    # https://github.com/metekemertas/RobustBisimulation/tree/main
+    # Note: using "huber_mean" for z_dist and z'_dist can require max_norm scaled by feature_dim;
+    # here, we retain the original configuration without that scaling.
+    class_path: agents.bisim_agent_sac.BisimAgent
+    transition_model_type: "probabilistic"
+    rp_detach_encoder: true
+    zp_detach_encoder: true
+    bisim_dist: "huber_mean"
+    r_dist: "huber"
+    prob_dist: "huber_mean"
+    metric_loss_type: "L2"
+    encoder_max_norm: true
+
+  sac-op:
+    # SAC agent with next observation prediction auxiliary loss
+    class_path: agents.sac_aux_agent.SACAuxAgent
+    decoder_type: "pixel"
+
+  dbcnormed-sum:
+    # A "fixed" version of DBC-normed
+    class_path: agents.bisim_agent_sac.BisimAgent
+    transition_model_type: "probabilistic"
+    bisim_dist: "huber"
+    r_dist: "huber"
+    prob_dist: "huber"
+    metric_loss_type: "L2"
+    encoder_max_norm: true
