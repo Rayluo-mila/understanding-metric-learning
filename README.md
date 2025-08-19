@@ -1,5 +1,17 @@
 # Understanding Behavioral Metric Learning in Deep Reinforcement Learning
 
+<div align="center">
+
+[![arXiv](https://img.shields.io/badge/arXiv-2506.00563-b31b1b.svg)](https://arxiv.org/abs/2506.00563)
+[![RLC 2025](https://img.shields.io/badge/RLC-2025-blue.svg)](https://rl-conference.cc/)
+[![Blog](https://img.shields.io/badge/Blog-📝-green.svg)](https://zyluo.netlify.app/blog/metric-2025)
+[![Poster](https://img.shields.io/badge/Poster-📊-orange.svg)](https://zyluo.netlify.app/files/Metric_RLC2025_Poster.pdf)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![GitHub stars](https://img.shields.io/github/stars/Rayluo-mila/understanding-metric-learning?style=social)](https://github.com/Rayluo-mila/understanding-metric-learning)
+[![Python](https://img.shields.io/badge/python-3.7+-blue.svg)](https://www.python.org/downloads/release/python-370/)
+
+</div>
+
 📄 ["Understanding Behavioral Metric Learning: A Large-Scale Study on Distracting Reinforcement Learning Environments"](https://arxiv.org/abs/2506.00563), [Reinforcement Learning Conference (RLC)](https://rl-conference.cc/) 2025
 
 by [Ziyan "Ray" Luo](https://zyluo.netlify.app/)¹², [Tianwei Ni](https://twni2016.github.io/)¹³, [Pierre-Luc Bacon](https://pierrelucbacon.com/)¹³⁵, [Doina Precup](https://mila.quebec/en/directory/doina-precup)¹²⁵, [Xujie Si](https://www.cs.toronto.edu/~six/)¹⁴⁵
