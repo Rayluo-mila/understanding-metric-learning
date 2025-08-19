@@ -44,13 +44,13 @@ A modular framework that affords the comparison of *different behavioral metrics
       ├── train_video
       └── eval_video
     ```
-    - **Option 2: Custom Download and Preprocessing**  
-      1. Download the raw [Kinetics-400 dataset](https://github.com/Showmax/kinetics-downloader). (or other dataset like [DAVIS](https://davischallenge.org/davis2017/code.html)).
-      2. Extract videos labeled `driving_car` from the Kinetic's train split.
-      3. Place the extracted videos of your choice in:
-          - `environments/dmc2gym/res/train_video` (for training),
-          - `environments/dmc2gym/res/eval_video` (for evaluation).
-      4. Alternatively, you may store the videos in a directory of your choice and set the `resource_files` and `eval_resource_files` fields in `cfgs/env/dmc_pixel.yaml` to point to your dataset location.
+  - **Option 2: Custom Download and Preprocessing**  
+    1. Download the raw [Kinetics-400 dataset](https://github.com/Showmax/kinetics-downloader). (or other dataset like [DAVIS](https://davischallenge.org/davis2017/code.html)).
+    2. Extract videos labeled `driving_car` from the Kinetic's train split.
+    3. Place the extracted videos of your choice in:
+        - `environments/dmc2gym/res/train_video` (for training),
+        - `environments/dmc2gym/res/eval_video` (for evaluation).
+    4. Alternatively, you may store the videos in a directory of your choice and set the `resource_files` and `eval_resource_files` fields in `cfgs/env/dmc_pixel.yaml` to point to your dataset location.
 
 ## 🚀 To run the experiments
 

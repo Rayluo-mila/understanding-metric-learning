@@ -103,7 +103,7 @@ agent:
   # isolated metric agent settings
   encoder_max_norm_metric: false
   encoder_max_norm_override_metric: 0
-  encoder_type_metric: mlp  # a copy of encoder that only affected by metric loss
+  encoder_type_metric: mlp  # Isolated encoder that only affected by metric(-related) loss
   metric_encoder_lr: 1e-3
   metric_encoder_with_phi_q: false
   metric_encoder_feature_dim: 50

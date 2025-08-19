@@ -1,6 +1,5 @@
 import torch
 import torch.nn.functional as F
-import math
 
 
 def _sqrt(x, tol=1e-9):

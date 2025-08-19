@@ -85,7 +85,7 @@ agent:
   state_reward_decoder_loss_coef: 0.5
   state_rp_detach_encoder: false
   report_grad_norm: false
-  encoder_type_metric: pixel  # a copy of encoder that only affected by metric loss
+  encoder_type_metric: pixel  # Isolated encoder that only affected by metric(-related) loss
 
   device: ${device}
   action_repeat: ${action_repeat}
