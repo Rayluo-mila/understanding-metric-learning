@@ -1,0 +1,6 @@
+# Experimental agent configurations
+# Uncomment and modify the following to add custom agent settings that override defaults
+# 
+# agents:
+#   agent_name:
+#     param: value
