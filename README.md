@@ -27,7 +27,7 @@ by [Ziyan "Ray" Luo](https://zyluo.netlify.app/)¹², [Tianwei Ni](https://twni2
   <img src="environments/noise_illustration.png" alt="Examples of background noise settings in pixel-based domains." width="800"/>
 </p>
 
-A modular framework that affords the comparison of *different behavioral metrics learning methods* in deep reinforcement learning.
+A modular framework that affords scientific study of *different behavioral metrics learning methods* in deep reinforcement learning.
 
 
 ## ⚙️ Installation
@@ -91,7 +91,35 @@ Default hyperparameters are stored in [`cfgs/`](https://github.com/Rayluo-mila/u
 
 ## 🧠 Available Agents
 
-See [`cfgs/agent_configs.yaml`](https://github.com/Rayluo-mila/understanding-metric-learning/blob/main/cfgs/agent_configs.yaml) for the list of available agents. To specify an agent, pass `agent.name=<agent_name>` as a command-line argument to `main.py`, as done in the minimal experiments.
+The following agents are available in this repository (see [`cfgs/agent_configs.yaml`](https://github.com/Rayluo-mila/understanding-metric-learning/blob/main/cfgs/agent_configs.yaml) for configuration details). To use an agent, pass `agent.name=<agent_name>` to `main.py` as shown in the minimal experiments. Examplar `<agent_name>` are as follows:
+
+- **sac** (SAC, Soft Actor-Critic)  
+  Implements the Soft Actor-Critic algorithm, partially adapted from the SAC-AE codebase.
+    [📄 Paper](https://arxiv.org/abs/1910.01741) | [💻 Code](https://github.com/denisyarats/pytorch_sac_ae)
+
+- **deepmdp**  (DeepMDP, reward prediction + self-prediction)
+  Learns a latent space for RL using reward and transition models.
+  [📄 Paper](https://proceedings.mlr.press/v97/gelada19a.html) | [💻 Code](https://github.com/facebookresearch/deep_bisim4control/blob/main/agent/deepmdp_agent.py)
+
+- **dbc** (DBC, Deep Bisimulation Control)  
+  Uses bisimulation metrics for state representation learning.
+  [📄 Paper](https://arxiv.org/abs/2006.10742) | [💻 Code](https://github.com/facebookresearch/deep_bisim4control)
+
+- **dbcnormed**
+  DBC with max normalization for improved robustness.
+  [📄 Paper](https://arxiv.org/abs/2110.14096) | [💻 Code](https://github.com/metekemertas/RobustBisimulation)
+
+- **mico** (MICo, Matching under Independent Couplings)
+  Employs pure sample-based metrics for state representation.
+  [📄 Paper](https://proceedings.neurips.cc/paper_files/paper/2021/hash/fd06b8ea02fe5b1c2496fe1700e9d16c-Abstract.html) | [💻 Code](https://github.com/google-research/google-research/blob/bb19948d367f3337c16176232e86069bf36b0bf5/mico)
+
+- **rap** (RAP, Reducing Approximation Gap)
+  [📄 Paper](https://proceedings.neurips.cc/paper_files/paper/2022/hash/eda9523faa5e7191aee1c2eaff669716-Abstract-Conference.html) | [💻 Code](https://github.com/jianda-chen/RAP_distance)
+
+- **simsr** (SimSR, Simple Distance-based State Representation)  
+  [📄 Paper](https://arxiv.org/abs/2112.15303) | [💻 Code](https://github.com/bit1029public/SimSR)
+
+- See [`cfgs/agent_configs.yaml`](https://github.com/Rayluo-mila/understanding-metric-learning/blob/main/cfgs/agent_configs.yaml) for more about agents for case study and isolated evaluation.
 
 ## 📊 Hyperparameters
 
@@ -122,7 +150,7 @@ See [`cfgs/README.md`](https://github.com/Rayluo-mila/understanding-metric-learn
 - [`utils/`](https://github.com/Rayluo-mila/understanding-metric-learning/tree/main/utils): Utility functions (e.g., logging, seeding, and replay buffers).
 
 
-## 🔧 Steps to DIY your own (metric-based) RL agents
+## 🔧 Steps to DIY your own (metric-based) RL agents / environments
 
 - Create a new agent by inheriting from the `BaseAgent` class in [`agents/base_agent.py`](https://github.com/Rayluo-mila/understanding-metric-learning/blob/main/agents/base_agent.py). You can refer to the existing agents for examples.
 
@@ -139,32 +167,12 @@ See [`cfgs/README.md`](https://github.com/Rayluo-mila/understanding-metric-learn
 If you have any questions or issues, please feel free to email us (ziyan.luo@mail.mcgill.ca, twni2016@gmail.com), or open an issue on GitHub. We are glad to hear any form of feedback, and will try our best to help you.
 
 
-## 📚 References
+## 📚 Other References
 
 - **DeepMind Control Suite (DMC)**  
   [📄 Paper](https://arxiv.org/abs/1801.00690) | [💻 Code](https://github.com/google-deepmind/dm_control)
 
 - **Soft Actor-Critic + Autoencoder (SAC + AE)**  
   [📄 Paper](https://arxiv.org/abs/1910.01741) | [💻 Code](https://github.com/denisyarats/pytorch_sac_ae)
-
-- **DeepMDP**  
-  [📄 Paper](https://proceedings.mlr.press/v97/gelada19a.html) | [💻 Code (provided by DBC authors)](https://github.com/facebookresearch/deep_bisim4control/blob/main/agent/deepmdp_agent.py)
-
-- **Deep Bisimulation Control (DBC)**  
-  [📄 Paper](https://arxiv.org/abs/2006.10742) | [💻 Code](https://github.com/facebookresearch/deep_bisim4control)
-
-- **DBC with max normalization (DBC-normed)**  
-  [📄 Paper](https://arxiv.org/abs/2110.14096) | [💻 Code](https://github.com/metekemertas/RobustBisimulation)
-
-- **Matching under Independent Couplings (MICo)**  
-  [📄 Paper](https://proceedings.neurips.cc/paper_files/paper/2021/hash/fd06b8ea02fe5b1c2496fe1700e9d16c-Abstract.html) | [💻 Code](https://github.com/google-research/google-research/blob/bb19948d367f3337c16176232e86069bf36b0bf5/mico)
-
-- **Reducing Approximation Gap (RAP)**  
-  [📄 Paper](https://proceedings.neurips.cc/paper_files/paper/2022/hash/eda9523faa5e7191aee1c2eaff669716-Abstract-Conference.html) | [💻 Code](https://github.com/jianda-chen/RAP_distance)
-
-- **Simple Distance-based State Representation (SimSR)**  
-  [📄 Paper](https://arxiv.org/abs/2112.15303) | [💻 Code](https://github.com/bit1029public/SimSR)
-
-
 
 
