@@ -7,8 +7,8 @@ task_name: swingup
 image_size: 84
 action_repeat: 8
 frame_stack: 3
-resource_files: environments/dmc2gym/res/train_video/*.mp4
-eval_resource_files: environments/dmc2gym/res/eval_video/*.mp4
+resource_files: ../bisimulation_tools/environments/dmc2gym/res/train_video/*.mp4
+eval_resource_files: ../bisimulation_tools/environments/dmc2gym/res/eval_video/*.mp4
 noise_source: none  # Choices: ['color', 'noise', 'images', 'video', 'video_gray', 'video_random', 'none']
 total_frames: 1000  # Total extracted frames from the video to form the distracting bg
 eval_total_frames: 1000
