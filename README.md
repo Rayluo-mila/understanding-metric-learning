@@ -93,30 +93,42 @@ Default hyperparameters are stored in [`cfgs/`](https://github.com/Rayluo-mila/u
 
 The following agents are available in this repository (see [`cfgs/agent_configs.yaml`](https://github.com/Rayluo-mila/understanding-metric-learning/blob/main/cfgs/agent_configs.yaml) for configuration details). To use an agent, pass `agent.name=<agent_name>` to `main.py` as shown in the minimal experiments. Examplar `<agent_name>` are as follows:
 
-- **sac** (SAC, Soft Actor-Critic)  
+- **sac** (SAC, Soft Actor-Critic)
+
   Implements the Soft Actor-Critic algorithm, partially adapted from the SAC-AE codebase.
+
     [📄 Paper](https://arxiv.org/abs/1910.01741) | [💻 Code](https://github.com/denisyarats/pytorch_sac_ae)
 
 - **deepmdp**  (DeepMDP, reward prediction + self-prediction)
+
   Learns a latent space for RL using reward and transition models.
+
   [📄 Paper](https://proceedings.mlr.press/v97/gelada19a.html) | [💻 Code](https://github.com/facebookresearch/deep_bisim4control/blob/main/agent/deepmdp_agent.py)
 
-- **dbc** (DBC, Deep Bisimulation Control)  
+- **dbc** (DBC, Deep Bisimulation Control)
+
   Uses bisimulation metrics for state representation learning.
+
   [📄 Paper](https://arxiv.org/abs/2006.10742) | [💻 Code](https://github.com/facebookresearch/deep_bisim4control)
 
 - **dbcnormed**
+
   DBC with max normalization for improved robustness.
+
   [📄 Paper](https://arxiv.org/abs/2110.14096) | [💻 Code](https://github.com/metekemertas/RobustBisimulation)
 
 - **mico** (MICo, Matching under Independent Couplings)
+
   Employs pure sample-based metrics for state representation.
+
   [📄 Paper](https://proceedings.neurips.cc/paper_files/paper/2021/hash/fd06b8ea02fe5b1c2496fe1700e9d16c-Abstract.html) | [💻 Code](https://github.com/google-research/google-research/blob/bb19948d367f3337c16176232e86069bf36b0bf5/mico)
 
 - **rap** (RAP, Reducing Approximation Gap)
+
   [📄 Paper](https://proceedings.neurips.cc/paper_files/paper/2022/hash/eda9523faa5e7191aee1c2eaff669716-Abstract-Conference.html) | [💻 Code](https://github.com/jianda-chen/RAP_distance)
 
-- **simsr** (SimSR, Simple Distance-based State Representation)  
+- **simsr** (SimSR, Simple Distance-based State Representation)
+
   [📄 Paper](https://arxiv.org/abs/2112.15303) | [💻 Code](https://github.com/bit1029public/SimSR)
 
 - See [`cfgs/agent_configs.yaml`](https://github.com/Rayluo-mila/understanding-metric-learning/blob/main/cfgs/agent_configs.yaml) for more about agents for case study and isolated evaluation.
